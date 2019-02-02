@@ -149,10 +149,16 @@ class MapsCollection extends Component {
 
   autoMap(group) {
     this.setState({ autoMap: true });
-    let covariates = this.props.activeConsortium.pipelineSteps[0].inputMap.covariates.ownerMappings;
-    let data = this.props.activeConsortium.pipelineSteps[0].inputMap.data.ownerMappings;
+    let covariates = false;
+    let data = false;
+    if(this.props.activeConsortium.pipelineSteps[0].inputMap.covariates){
+      covariates = this.props.activeConsortium.pipelineSteps[0].inputMap.covariates.ownerMappings;
+    }
+    if(this.props.activeConsortium.pipelineSteps[0].inputMap.data){
+      data = this.props.activeConsortium.pipelineSteps[0].inputMap.data.ownerMappings;
+    }
     this.makePoints(group.firstRow).map((string, index) => {
-      if( Object.keys(this.filterGetObj(covariates,string)).length > 0 ){
+      if( covariates && Object.keys(this.filterGetObj(covariates,string)).length > 0 ){
         this.setStepIO(
           index,
           group.id,
@@ -162,7 +168,7 @@ class MapsCollection extends Component {
           string
         );
       }
-      if( Object.keys(this.filterGetObj(data,string)).length > 0 ){
+      if( data && Object.keys(this.filterGetObj(data,string)).length > 0 ){
         this.setStepIO(
           index,
           group.id,

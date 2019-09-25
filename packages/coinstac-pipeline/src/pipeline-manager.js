@@ -444,7 +444,7 @@ module.exports = {
                 .then(() => activePipelines[data.runId].remote.resolve(data.output));
             } else if (data.error && activePipelines[data.runId]) {
               activePipelines[data.runId].state = 'received error';
-              activePipelines[data.runId].remote.reject(Object.assign(new Error(), data.error));
+              activePipelines[data.runId].remote.reject(Object.assign(new Error(data.error), data.error));
             }
             break;
           case `${clientId}-register`:

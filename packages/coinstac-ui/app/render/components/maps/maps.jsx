@@ -15,7 +15,7 @@ import {
 } from '../../state/graphql/props';
 import { notifyInfo, notifySuccess } from '../../state/ducks/notifyAndLog';
 import {
-  FETCH_ALL_CONSORTIA_QUERY
+  FETCH_ALL_CONSORTIA_QUERY,
 } from '../../state/graphql/functions';
 
 const styles = {
@@ -58,7 +58,7 @@ const mapStateToProps = ({ auth, collections: { associatedConsortia } }) => {
 };
 
 const MapsWithData = compose(
-  graphql(FETCH_ALL_CONSORTIA_QUERY,'fetchAllConsortia'),
+  graphql(FETCH_ALL_CONSORTIA_QUERY, 'fetchAllConsortia'),
   withApollo
 )(Maps);
 
@@ -66,5 +66,4 @@ export default connect(mapStateToProps,
   {
     notifyInfo,
     notifySuccess,
-  }
-)(MapsWithData);
+  })(MapsWithData);

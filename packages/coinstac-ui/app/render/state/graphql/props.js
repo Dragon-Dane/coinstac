@@ -179,7 +179,7 @@ export const updateConsortiumMappedUsersProp = (name) => {
     props: ({ ownProps, mutate }) => ({
       [name]: ({ consortiumId, mappedForRun }) => mutate({
         variables: { consortiumId, mappedForRun },
-      })
+      }),
     }),
   };
 };

@@ -35,7 +35,7 @@ const styles = theme => ({
   chipFocused: {
     backgroundColor: emphasize(
       theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
-      0.08,
+      0.08
     ),
   },
   noOptionsMessage: {

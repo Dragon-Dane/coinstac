@@ -54,7 +54,7 @@ const styles = theme => ({
 class MapsStepCovariate extends Component {
   componentWillUpdate() {
     if (this.refs.Container) {
-      let Container = ReactDOM.findDOMNode(this.refs.Container);
+      const Container = ReactDOM.findDOMNode(this.refs.Container);
       this.props.getContainers(Container);
     }
   }
@@ -68,34 +68,41 @@ class MapsStepCovariate extends Component {
       index,
     } = this.props;
 
-    let name = step.name;
+    const { name } = step;
 
     return (
       <Paper
         className={classNames('drop-panel', classes.rootPaper)}
         elevation={1}
       >
-        <Typography style={{fontWeight: '500', fontSize: '1rem'}} className={classes.title}>
+        <Typography style={{ fontWeight: '500', fontSize: '1rem' }} className={classes.title}>
           {name}
         </Typography>
         <div className={classes.listDropzoneContainer}>
           <div className={classNames('drop-zone', classes.dropZone)}>
             {
               !column
-                ? <div
+                ? (
+                  <div
                     ref="Container"
                     className={`acceptor acceptor-${name}`}
                     data-type={type}
                     data-name={name}
                     data-index={index}
                   />
-              : <div ref="Container" className="card-draggable">
-                <FileCopyIcon /> {column}
-                <span onClick={()=>{this.props.removeMapStep(type, index, column)}}>
-                  <Icon
-                    className={classNames('fa fa-times-circle', classes.timesIcon)} />
-                </span>
-                </div>}
+                )
+                : (
+                  <div ref="Container" className="card-draggable">
+                    <FileCopyIcon />
+                    {' '}
+                    {column}
+                    <span onClick={() => { this.props.removeMapStep(type, index, column); }}>
+                      <Icon
+                        className={classNames('fa fa-times-circle', classes.timesIcon)}
+                      />
+                    </span>
+                  </div>
+                )}
           </div>
         </div>
       </Paper>

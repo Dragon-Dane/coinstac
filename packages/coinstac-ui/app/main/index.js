@@ -233,13 +233,13 @@ loadConfig()
         .then(() => {
           logger.verbose('############ Client starting pipeline');
 
-          const pipelineName = pipeline.name
-          const consortiumName = consortium.name
+          const pipelineName = pipeline.name;
+          const consortiumName = consortium.name;
 
           ipcFunctions.sendNotification(
             'Pipeline started',
             `Pipeline ${pipelineName} started on consortia ${consortiumName}`
-          )
+          );
 
           return initializedCore.startPipeline(
             null,
@@ -262,7 +262,7 @@ loadConfig()
                 ipcFunctions.sendNotification(
                   'Pipeline finished',
                   `Pipeline ${pipelineName} finished on consortia ${consortiumName}`
-                )
+                );
 
                 return initializedCore.unlinkFiles(run.id)
                   .then(() => {
@@ -281,7 +281,7 @@ loadConfig()
                   ipcFunctions.sendNotification(
                     'Pipeline stopped',
                     `Pipeline ${pipelineName} stopped on consortia ${consortiumName}`
-                  )
+                  );
 
                   return initializedCore.unlinkFiles(run.id)
                     .then(() => {
@@ -479,7 +479,7 @@ loadConfig()
           },
         ];
         properties = ['openFile', 'multiSelections'];
-        postDialogFunc = ipcFunctions.manualFileSelectionMultExt;       
+        postDialogFunc = ipcFunctions.manualFileSelectionMultExt;
       } else {
         filters = [
           {

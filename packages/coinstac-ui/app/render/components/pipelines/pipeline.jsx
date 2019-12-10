@@ -94,7 +94,7 @@ class Pipeline extends Component {
     }
 
     if (props.params.runId) {
-      const runs = props.runs;
+      const { runs } = props;
       runs.filter(run => run.id === props.params.runId);
       pipeline = get(runs, '0.pipelineSnapshot');
     }
@@ -156,7 +156,7 @@ class Pipeline extends Component {
   }
 
   componentDidUpdate() {
-    const pipeline = this.state
+    const pipeline = this.state;
     if (pipeline.steps && pipeline.steps.inputMap) {
       console.log(pipeline.steps.inputMap);
     }
@@ -242,18 +242,18 @@ class Pipeline extends Component {
           ...Object.keys(inputMap).map((key) => {
             if (key !== 'covariates' && 'fromCache' in inputMap[key]) {
               const cacheStep = inputMap[key].fromCache.step;
-              const variable = inputMap[key].fromCache.variable;
-              const label = inputMap[key].fromCache.label;
+              const { variable } = inputMap[key].fromCache;
+              const { label } = inputMap[key].fromCache;
 
               if (index >= stepIndex && movedStepIndex < stepIndex) {
                 return { [key]: {} };
-              } else if (movedStepIndex === cacheStep) {
+              } if (movedStepIndex === cacheStep) {
                 return { [key]: { fromCache: { step: index, variable, label } } };
-              } else if (index <= cacheStep && movedStepIndex > cacheStep) {
+              } if (index <= cacheStep && movedStepIndex > cacheStep) {
                 return {
                   [key]: { fromCache: { step: cacheStep + 1, variable, label } },
                 };
-              } else if (movedStepIndex < cacheStep
+              } if (movedStepIndex < cacheStep
                           && index >= cacheStep
                           && index < stepIndex) {
                 return {
@@ -263,8 +263,7 @@ class Pipeline extends Component {
             }
 
             return { [key]: inputMap[key] };
-          })
-        );
+          }));
 
         if ('covariates' in inputMap && 'ownerMappings' in inputMap.covariates && inputMap.covariates.ownerMappings.length) {
           let covariateMappings = [...inputMap.covariates.ownerMappings];
@@ -274,12 +273,12 @@ class Pipeline extends Component {
             .map((cov) => {
               if (index >= stepIndex && movedStepIndex < stepIndex) {
                 return {};
-              } else if (movedStepIndex === cov.fromCache.step) {
+              } if (movedStepIndex === cov.fromCache.step) {
                 return { fromCache: { ...cov.fromCache, step: index } };
-              } else if (index <= cov.fromCache.step
+              } if (index <= cov.fromCache.step
                           && movedStepIndex > cov.fromCache.step) {
                 return { fromCache: { ...cov.fromCache, step: cov.fromCache.step + 1 } };
-              } else if (movedStepIndex < cov.fromCache.step
+              } if (movedStepIndex < cov.fromCache.step
                           && index >= cov.fromCache.step
                           && index < stepIndex) {
                 return { fromCache: { ...cov.fromCache, step: cov.fromCache.step - 1 } };
@@ -311,10 +310,10 @@ class Pipeline extends Component {
         inputMap: Object.assign(
           {},
           ...Object.keys(movedStep.inputMap).map((key) => {
-            if (key !== 'covariates' && 'fromCache' in movedStep.inputMap[key] &&
-              movedStep.inputMap[key].step >= index) {
+            if (key !== 'covariates' && 'fromCache' in movedStep.inputMap[key]
+              && movedStep.inputMap[key].step >= index) {
               return { [key]: {} };
-            } else if (key === 'covariates' && 'ownerMappings' in movedStep.inputMap.covariates && movedStep.inputMap.covariates.ownerMappings.length) {
+            } if (key === 'covariates' && 'ownerMappings' in movedStep.inputMap.covariates && movedStep.inputMap.covariates.ownerMappings.length) {
               return {
                 [key]: movedStep.inputMap[key].ownerMappings
                   .filter(cov => cov.fromCache)
@@ -404,7 +403,9 @@ class Pipeline extends Component {
   }
 
   savePipeline() {
-    const { auth: { user }, savePipeline, notifySuccess, notifyError } = this.props;
+    const {
+      auth: { user }, savePipeline, notifySuccess, notifyError,
+    } = this.props;
 
     this.setState({ savingStatus: 'pending' });
 
@@ -465,7 +466,9 @@ class Pipeline extends Component {
   }
 
   render() {
-    const { computations, connectDropTarget, consortia, classes, auth } = this.props;
+    const {
+      computations, connectDropTarget, consortia, classes, auth,
+    } = this.props;
     const {
       consortium,
       pipeline,

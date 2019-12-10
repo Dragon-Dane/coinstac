@@ -12,8 +12,8 @@ import { withStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import Select from '../common/react-select';
 import memoize from 'memoize-one';
+import Select from '../common/react-select';
 import MemberAvatar from '../common/member-avatar';
 import StatusButtonWrapper from '../common/status-button-wrapper';
 
@@ -66,12 +66,14 @@ class ConsortiumAbout extends Component {
   }
 
   addMember() {
-    const newMember = this.state.newMember;
+    const { newMember } = this.state;
     this.props.addMemberToConsortium(newMember.value);
   }
 
   toggleOwner(consUser) {
-    const { addUserRole, consortium, owner, removeUserRole, user } = this.props;
+    const {
+      addUserRole, consortium, owner, removeUserRole, user,
+    } = this.props;
     return () => {
       if (owner && consUser.id !== user.id) {
         if (consUser.owner) {
@@ -89,13 +91,13 @@ class ConsortiumAbout extends Component {
     this.setState({ newMember: value });
   }
 
-  handleTextFieldChange = name => event => {
+  handleTextFieldChange = name => (event) => {
     const { updateConsortium } = this.props;
     updateConsortium({ param: name, value: event.target.value });
   }
 
   mapUsers = memoize(
-    users => users ? users.map(user => ({ label: user.id, value: user.id })) : null
+    users => (users ? users.map(user => ({ label: user.id, value: user.id })) : null)
   );
 
   filterSelectedUsers = memoize(
@@ -171,11 +173,13 @@ class ConsortiumAbout extends Component {
           onChange={this.handleTextFieldChange('description')}
         />
         {
-          consortium.id &&
+          consortium.id
+          && (
           <div key="avatar-container" className={classes.membersContainer}>
             <Typography variant="subtitle2">Owner(s)/Members:</Typography>
             {
-              owner &&
+              owner
+              && (
               <div className={classes.addMemberContainer}>
                 <Select
                   placeholder="Select an user"
@@ -194,6 +198,7 @@ class ConsortiumAbout extends Component {
                   Add Member
                 </Button>
               </div>
+              )
             }
             <Table id="consortium-member-table">
               <TableHead>
@@ -201,35 +206,34 @@ class ConsortiumAbout extends Component {
                   <TableCell>Username</TableCell>
                   <TableCell>Owner</TableCell>
                   <TableCell>Member</TableCell>
-                  <TableCell></TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
                 {
-                  consortiumUsers.map(consUser =>
-                    (
-                      <TableRow key={`${consUser.id}-row`}>
-                        <TableCell>
-                          <MemberAvatar
-                            isOwner={owner}
-                            consRole="Member"
-                            name={consUser.id}
-                            width={30}
-                          />
-                          <span>{consUser.id}</span>
-                        </TableCell>
-                        <TableCell>
-                          <Checkbox
-                            onChange={this.toggleOwner(consUser)}
-                            checked={consUser.owner ? true : false}
-                            disabled={!owner || consUser.id === user.id}
-                            name="isOwner"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Checkbox disabled checked={consUser.member} name="isMember" />
-                        </TableCell>
-                        {
+                  consortiumUsers.map(consUser => (
+                    <TableRow key={`${consUser.id}-row`}>
+                      <TableCell>
+                        <MemberAvatar
+                          isOwner={owner}
+                          consRole="Member"
+                          name={consUser.id}
+                          width={30}
+                        />
+                        <span>{consUser.id}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          onChange={this.toggleOwner(consUser)}
+                          checked={!!consUser.owner}
+                          disabled={!owner || consUser.id === user.id}
+                          name="isOwner"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox disabled checked={consUser.member} name="isMember" />
+                      </TableCell>
+                      {
                           owner
                           && (
                             <TableCell>
@@ -249,12 +253,13 @@ class ConsortiumAbout extends Component {
                             </TableCell>
                           )
                         }
-                      </TableRow>
+                    </TableRow>
                   ))
                 }
               </TableBody>
             </Table>
           </div>
+          )
         }
       </ValidatorForm>
     );

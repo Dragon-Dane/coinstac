@@ -99,7 +99,7 @@ class CoinstacClient {
     arr.shift();
     arr[0].forEach((str, i) => {
       if (str && typeof str === 'string') {
-        let match = str.match(/(?:\.([a-zA-Z]+))?$/);
+        const match = str.match(/(?:\.([a-zA-Z]+))?$/);
         if (match[0] !== '' && match[1] !== 'undefined') {
           key = i;
         }
@@ -118,8 +118,8 @@ class CoinstacClient {
     const filesKey = this.getFileIndex([...metaFile]);
     if (filesKey !== 0) {
       metaFile = metaFile.map((row, i) => {
-        let r = [...row];
-        let data = r[filesKey];
+        const r = [...row];
+        const data = r[filesKey];
         r.splice(filesKey, 1);
         r.unshift(data);
         return r;
@@ -141,7 +141,7 @@ class CoinstacClient {
       const file = filecol[0];
       return path.isAbsolute(file)
         ? file
-        : path.resolve(path.join(path.dirname(metaFilePath), file))
+        : path.resolve(path.join(path.dirname(metaFilePath), file));
     });
     files.shift();
     return files;
@@ -262,7 +262,7 @@ class CoinstacClient {
           const pathsep = new RegExp(`${escape(path.sep)}|:`, 'g');
           linkPromises.push(
             linkAsync(filesArray[i], path.resolve(this.appDirectory, 'input', this.clientId, runId, filesArray[i].replace(pathsep, '-')))
-            .catch((e) => {
+              .catch((e) => {
               // permit dupes
                 if (e.code && e.code !== 'EEXIST') {
                   throw e;

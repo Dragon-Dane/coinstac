@@ -323,48 +323,39 @@ export const getAssociatedConsortia = applyAsyncLoading(
     })
 );
 
-export const getConsortium = applyAsyncLoading(consortiumId =>
-  dispatch =>
-  localDB.associatedConsortia.get(consortiumId)
-    .then((consortium) => {
-      dispatch(({
-        type: GET_CONSORTIUM,
-        payload: consortium,
-      }));
-
-      return consortium;
-    })
-);
-
-export const isAssocConsortiumMapped = applyAsyncLoading(consId =>
-  () =>
-  localDB.associatedConsortia.get(consId)
-  .then(cons => cons.isMapped)
-);
-
-export const unmapAssociatedConsortia = applyAsyncLoading(consortia =>
-  (dispatch) => {
-    const updatePromises = [];
-    const consortiaChanged = [];
-    // if (consId) {
-    //   consortia.forEach((consId) => {
-    //     consortiaChanged.push(consId);
-    //     updatePromises.push(
-    //       localDB.associatedConsortia.update(consId, { stepIO: [], isMapped: false })
-    //     );
-    //   });
-    // }
-    return Promise.all(updatePromises)
-    .then(() =>
-    localDB.associatedConsortia
-    .toArray()
-  )
-  .then((allConsortia) => {
+export const getConsortium = applyAsyncLoading(consortiumId => dispatch => localDB.associatedConsortia.get(consortiumId)
+  .then((consortium) => {
     dispatch(({
-      type: UNMAP_ASSOCIATED_CONSORTIA,
-      payload: { allConsortia, consortiaChanged },
+      type: GET_CONSORTIUM,
+      payload: consortium,
     }));
-  });
+
+    return consortium;
+  }));
+
+export const isAssocConsortiumMapped = applyAsyncLoading(consId => () => localDB.associatedConsortia.get(consId)
+  .then(cons => cons.isMapped));
+
+export const unmapAssociatedConsortia = applyAsyncLoading(consortia => (dispatch) => {
+  const updatePromises = [];
+  const consortiaChanged = [];
+  // if (consId) {
+  //   consortia.forEach((consId) => {
+  //     consortiaChanged.push(consId);
+  //     updatePromises.push(
+  //       localDB.associatedConsortia.update(consId, { stepIO: [], isMapped: false })
+  //     );
+  //   });
+  // }
+  return Promise.all(updatePromises)
+    .then(() => localDB.associatedConsortia
+      .toArray())
+    .then((allConsortia) => {
+      dispatch(({
+        type: UNMAP_ASSOCIATED_CONSORTIA,
+        payload: { allConsortia, consortiaChanged },
+      }));
+    });
 
   return Promise.all(updatePromises)
     .then(() => localDB.associatedConsortia

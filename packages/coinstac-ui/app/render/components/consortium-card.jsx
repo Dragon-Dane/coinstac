@@ -42,27 +42,27 @@ export default function ConsortiumCard(props) {
     );
     editOrViewText = 'Edit/View';
   } else {
-    membershipButton = isMember ?
-    (
-      <Button bsSize="small" bsStyle="warning" onClick={leaveConsortium}>
-        <span
-          aria-hidden="true"
-          className="glyphicon glyphicon glyphicon-minus"
-        />
-        {' '}
+    membershipButton = isMember
+      ? (
+        <Button bsSize="small" bsStyle="warning" onClick={leaveConsortium}>
+          <span
+            aria-hidden="true"
+            className="glyphicon glyphicon glyphicon-minus"
+          />
+          {' '}
         Leave
-      </Button>
-    ) :
-    (
-      <Button bsSize="small" bsStyle="success" onClick={joinConsortium}>
-        <span
-          aria-hidden="true"
-          className="glyphicon glyphicon glyphicon-plus"
-        />
-        {' '}
+        </Button>
+      )
+      : (
+        <Button bsSize="small" bsStyle="success" onClick={joinConsortium}>
+          <span
+            aria-hidden="true"
+            className="glyphicon glyphicon glyphicon-plus"
+          />
+          {' '}
         Join
-      </Button>
-    );
+        </Button>
+      );
     editOrViewText = 'View';
   }
 

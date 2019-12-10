@@ -75,24 +75,29 @@ function MapsItem(props) {
         <div className={classes.actionsContainer}>
           {
             itemMapped
-              ? <Button
-                 component={Link}
-                 variant="contained"
-                 color="primary"
-                 onClick={() => setConsortium(itemObject)}
-                 to={`map/${itemObject.id}`}>
+              ? (
+                <Button
+                  component={Link}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setConsortium(itemObject)}
+                  to={`map/${itemObject.id}`}
+                >
                   View Details
                 </Button>
-                :
+              )
+              : (
                 <Button
-                 component={Link}
-                 variant="contained"
-                 color="secondary"
-                 to={`map/${itemObject.id}`}
-                 onClick={() => setConsortium(itemObject)}
-                 name={`${itemObject.name}-map-data`}>
+                  component={Link}
+                  variant="contained"
+                  color="secondary"
+                  to={`map/${itemObject.id}`}
+                  onClick={() => setConsortium(itemObject)}
+                  name={`${itemObject.name}-map-data`}
+                >
                   Map Data to Consortium
                 </Button>
+              )
           }
           {itemOptions.actions}
           {

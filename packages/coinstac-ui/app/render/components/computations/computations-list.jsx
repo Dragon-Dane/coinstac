@@ -158,7 +158,13 @@ class ComputationsList extends Component { // eslint-disable-line
                           )
                         }
                       >
-                        Remove Image (<em>{ compLocalImage.size.toString().slice(0, -6) } MB</em>)
+                        Remove Image (
+                        <em>
+                          { compLocalImage.size.toString().slice(0, -6) }
+                          {' '}
+MB
+                        </em>
+)
                       </Button>
                     )
                   }
@@ -183,7 +189,12 @@ class ComputationsList extends Component { // eslint-disable-line
                           key={elem.id && elem.id !== 'latest' ? elem.id : elem.status}
                           style={elem.isErr ? { color: 'red' } : {}}
                         >
-                          {elem.id ? `${elem.id}: ` : ''}{elem.status} {elem.message} {elem.progress}
+                          {elem.id ? `${elem.id}: ` : ''}
+                          {elem.status}
+                          {' '}
+                          {elem.message}
+                          {' '}
+                          {elem.progress}
                         </div>
                       ))}
                     </pre>
@@ -339,11 +350,9 @@ const ComputationsListWithData = graphql(REMOVE_COMPUTATION_MUTATION,
     'removeComputation',
     FETCH_ALL_COMPUTATIONS_QUERY,
     'fetchAllComputations'
-  )
-)(ComputationsList);
+  ))(ComputationsList);
 
 const connectedComponent = connect(mapStateToProps,
-  { getDockerImages, pullComputations, removeImage }
-)(ComputationsListWithData);
+  { getDockerImages, pullComputations, removeImage })(ComputationsListWithData);
 
 export default withStyles(styles)(connectedComponent);

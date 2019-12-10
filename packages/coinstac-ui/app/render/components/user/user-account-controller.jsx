@@ -18,18 +18,18 @@ class UserAccountController extends Component {
     evt.preventDefault();
 
     this.props.logout()
-    .then(() => {
-      router.push('/login');
-      this.props.notifySuccess({
-        message: 'Successfully logged out',
+      .then(() => {
+        router.push('/login');
+        this.props.notifySuccess({
+          message: 'Successfully logged out',
+        });
+      })
+      .catch((err) => {
+        this.props.writeLog({ type: 'error', message: err });
+        this.props.notifyError({
+          message: 'Error logging out',
+        });
       });
-    })
-    .catch((err) => {
-      this.props.writeLog({ type: 'error', message: err });
-      this.props.notifyError({
-        message: 'Error logging out',
-      });
-    });
   }
 
   render() {
@@ -37,7 +37,6 @@ class UserAccountController extends Component {
       <UserAccount logoutUser={this.logoutUser} {...this.props} />
     );
   }
-
 }
 
 UserAccountController.contextTypes = {

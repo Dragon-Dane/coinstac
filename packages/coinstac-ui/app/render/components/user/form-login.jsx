@@ -59,13 +59,13 @@ class FormLogin extends Component {
     this.props.submit(data);
   }
 
-  handleChange = name => event => {
+  handleChange = name => (event) => {
     this.setState({
       [name]: event.target.value,
     });
   };
 
-  handleChangeCheckbox = name => event => {
+  handleChangeCheckbox = name => (event) => {
     this.setState({
       [name]: event.target.checked,
     });
@@ -87,22 +87,23 @@ class FormLogin extends Component {
   renderError = () => {
     const { auth, classes } = this.props;
 
-    const errorMessage =
-      auth.error === EXPIRED_TOKEN
-        ? 'Your login session has expired,<br/>please re-login'
-        : auth.error;
+    const errorMessage = auth.error === EXPIRED_TOKEN
+      ? 'Your login session has expired,<br/>please re-login'
+      : auth.error;
 
     return (
       <p
         className={classNames(classes.bottomMargin, classes.error)}
-        dangerouslySetInnerHTML={{__html: errorMessage}}
+        dangerouslySetInnerHTML={{ __html: errorMessage }}
       />
     );
   }
 
   render() {
     const { auth, loading, classes } = this.props;
-    const { username, password, saveLogin, openSetStartupDirectoryDialog } = this.state;
+    const {
+      username, password, saveLogin, openSetStartupDirectoryDialog,
+    } = this.state;
 
     return (
       <div className={classes.loginFormContainer}>
@@ -135,12 +136,12 @@ class FormLogin extends Component {
               className={classes.formControl}
             />
             <FormControlLabel
-              control={
+              control={(
                 <Checkbox
                   checked={saveLogin}
                   onChange={this.handleChangeCheckbox('saveLogin')}
                 />
-              }
+)}
               label="Keep me logged in"
               className={classes.formControl}
             />

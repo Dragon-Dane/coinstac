@@ -6,18 +6,18 @@ import './activity-indicator.css';
 
 export default class ActivityIndicator extends React.Component {
   static defaultProps = {
-    visible: false
+    visible: false,
   };
 
   static propTypes = {
-    visible: PropTypes.bool
+    visible: PropTypes.bool,
   };
 
   render() {
     return (
       <ul
         className={classNames('activity-indicator', {
-          'is-loading': this.props.visible
+          'is-loading': this.props.visible,
         })}
       >
         <li />
@@ -25,6 +25,6 @@ export default class ActivityIndicator extends React.Component {
         <li />
         <li />
       </ul>
-    )
+    );
   }
 }

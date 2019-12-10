@@ -33,7 +33,7 @@ class FormSignupController extends Component {
    * @param  {string}    formData.username
    * @return {undefined}
    */
-  onSubmit = formData => {
+  onSubmit = (formData) => {
     let error;
 
     if (!formData.name) {
@@ -54,7 +54,7 @@ class FormSignupController extends Component {
       return this.handleSignupError(error);
     }
 
-    this.setState({ error: null })
+    this.setState({ error: null });
 
     return this.props.signUp(formData)
       .then(() => {
@@ -68,7 +68,7 @@ class FormSignupController extends Component {
         }
       })
       .catch((error) => {
-        this.handleSignupError(error)
+        this.handleSignupError(error);
       });
   }
 
@@ -79,7 +79,7 @@ class FormSignupController extends Component {
     }
   }
 
-  handleSignupError = error => {
+  handleSignupError = (error) => {
     let message;
 
     if (error.message) {
@@ -123,5 +123,6 @@ const mapStateToProps = ({ auth }) => {
 };
 
 export default connect(mapStateToProps,
-  { clearError, clearUser, notifySuccess, signUp }
-)(FormSignupController);
+  {
+    clearError, clearUser, notifySuccess, signUp,
+  })(FormSignupController);

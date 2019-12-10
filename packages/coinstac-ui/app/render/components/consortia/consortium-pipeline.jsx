@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
+import memoize from 'memoize-one';
 import {
   getAllCollections,
   deleteCollection,
@@ -19,7 +20,6 @@ import {
   FETCH_ALL_CONSORTIA_QUERY,
   SAVE_ACTIVE_PIPELINE_MUTATION,
 } from '../../state/graphql/functions';
-import memoize from 'memoize-one';
 
 const styles = theme => ({
   tabTitle: {
@@ -64,9 +64,9 @@ class ConsortiumPipeline extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.pipelines.length > 0 &&
-      props.consortium.activePipelineId &&
-      (!state.activePipeline || state.activePipeline.id !== props.consortium.activePipelineId)
+    if (props.pipelines.length > 0
+      && props.consortium.activePipelineId
+      && (!state.activePipeline || state.activePipeline.id !== props.consortium.activePipelineId)
     ) {
       const activePipeline = props.pipelines
         .find(cons => cons.id === props.consortium.activePipelineId);
@@ -77,7 +77,7 @@ class ConsortiumPipeline extends Component {
     return null;
   }
 
-  selectPipeline = pipelineId => event => {
+  selectPipeline = pipelineId => (event) => {
     const { collections, consortium, saveActivePipeline } = this.props;
     collections.map((item) => {
       this.props.deleteCollection(item.id);
@@ -110,11 +110,13 @@ class ConsortiumPipeline extends Component {
   );
 
   filterSharedPipelines = memoize(
-    (pipelines, consortiumId) => pipelines.filter((pipe) => pipe.owningConsortium !== consortiumId)
+    (pipelines, consortiumId) => pipelines.filter(pipe => pipe.owningConsortium !== consortiumId)
   );
 
   render() {
-    const { consortium, owner, classes, pipelines } = this.props;
+    const {
+      consortium, owner, classes, pipelines,
+    } = this.props;
     const {
       activePipeline,
       openOwnedPipelinesMenu,
@@ -175,8 +177,8 @@ class ConsortiumPipeline extends Component {
                     onClose={this.closeOwnedPipelinesMenu}
                   >
                     {
-                      ownedPipelines &&
-                      ownedPipelines.map(pipe => (
+                      ownedPipelines
+                      && ownedPipelines.map(pipe => (
                         <MenuItem
                           key={`owned-${pipe.id}`}
                           onClick={this.selectPipeline(pipe.id)}
@@ -203,8 +205,8 @@ class ConsortiumPipeline extends Component {
                     onClose={this.closeSharedPipelinesMenu}
                   >
                     {
-                      sharedPipelines &&
-                      sharedPipelines.map(pipe => (
+                      sharedPipelines
+                      && sharedPipelines.map(pipe => (
                         <MenuItem
                           key={`owned-${pipe.id}`}
                           onClick={this.selectPipeline(pipe.id)}
@@ -245,7 +247,7 @@ ConsortiumPipeline.propTypes = {
   deleteCollection: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ collections: collections }) {
+function mapStateToProps({ collections }) {
   return collections;
 }
 
@@ -270,7 +272,6 @@ const connectedComponent = connect(mapStateToProps,
   {
     deleteCollection,
     getAllCollections,
-  }
-)(ConsortiumPipelineWithData);
+  })(ConsortiumPipelineWithData);
 
 export default withStyles(styles)(connectedComponent);

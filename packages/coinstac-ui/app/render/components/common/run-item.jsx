@@ -357,7 +357,7 @@ class RunItem extends Component {
       </Paper>
     );
   }
-};
+}
 
 RunItem.defaultProps = {
   stopPipeline: () => {},

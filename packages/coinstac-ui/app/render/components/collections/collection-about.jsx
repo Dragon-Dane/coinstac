@@ -46,7 +46,9 @@ export default class CollectionAbout extends Component {
           </FormGroup>
 
           <FormGroup controlId="description">
-            <ControlLabel>Collection Description</ControlLabel> (Optional)
+            <ControlLabel>Collection Description</ControlLabel>
+            {' '}
+(Optional)
             <FormControl
               componentClass="textarea"
               value={collection.description || ''}
@@ -54,10 +56,12 @@ export default class CollectionAbout extends Component {
               onChange={() => updateCollection({ description: this.description.value })}
             />
           </FormGroup>
-          <fieldset style={styles.fieldset} className={'highlight'}>
+          <fieldset style={styles.fieldset} className="highlight">
             <h3>Study Details</h3>
             <FormGroup controlId="name">
-              <ControlLabel>Study Name</ControlLabel> (Optional)
+              <ControlLabel>Study Name</ControlLabel>
+              {' '}
+(Optional)
               <FormControl
                 type="input"
                 value={collection.studyName || ''}
@@ -67,7 +71,9 @@ export default class CollectionAbout extends Component {
             </FormGroup>
 
             <FormGroup controlId="description">
-              <ControlLabel>Study Description</ControlLabel> (Optional)
+              <ControlLabel>Study Description</ControlLabel>
+              {' '}
+(Optional)
               <FormControl
                 componentClass="textarea"
                 value={collection.studyDescription || ''}

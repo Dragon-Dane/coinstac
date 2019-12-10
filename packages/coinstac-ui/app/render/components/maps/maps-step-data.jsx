@@ -56,13 +56,15 @@ const styles = theme => ({
 class MapsStepData extends Component {
   componentWillUpdate() {
     if (this.refs.Container) {
-      let Container = ReactDOM.findDOMNode(this.refs.Container);
+      const Container = ReactDOM.findDOMNode(this.refs.Container);
       this.props.getContainers(Container);
     }
   }
 
   render() {
-    const { step, type, classes, column, index } = this.props;
+    const {
+      step, type, classes, column, index,
+    } = this.props;
 
     const name = step.type;
 
@@ -71,43 +73,53 @@ class MapsStepData extends Component {
         className={classNames('drop-panel', classes.rootPaper)}
         elevation={1}
       >
-        <Typography style={{fontWeight: '500', fontSize: '1rem'}} className={classes.title}>
+        <Typography style={{ fontWeight: '500', fontSize: '1rem' }} className={classes.title}>
           {step.type}
         </Typography>
         <div className={classes.listDropzoneContainer}>
           <div className={classNames('drop-zone', classes.dropZone)}>
             {
               !column
-                ? <div
+                ? (
+                  <div
                     ref="Container"
-                    className={`acceptor acceptor-data`}
+                    className="acceptor acceptor-data"
                     data-type={type}
                     data-name={name}
                     data-index={index}
                   />
-              : <div ref="Container" className="card-draggable">
-                <FileCopyIcon /> {column}
-                <span onClick={()=>{this.props.removeMapStep(type, index, column)}}>
-                  <Icon
-                    className={classNames('fa fa-times-circle', classes.timesIcon)} />
-                </span>
-                </div>}
+                )
+                : (
+                  <div ref="Container" className="card-draggable">
+                    <FileCopyIcon />
+                    {' '}
+                    {column}
+                    <span onClick={() => { this.props.removeMapStep(type, index, column); }}>
+                      <Icon
+                        className={classNames('fa fa-times-circle', classes.timesIcon)}
+                      />
+                    </span>
+                  </div>
+                )}
           </div>
         </div>
-        {step.value && <div className={classes.listDropzoneContainer}>
-            <List className={classes.interestList}>
-              <ListItem style={{paddingLeft: 0}}><ListItemText primary="Interest(s):" /></ListItem>
-              {step.value &&
-                step.value.map((key, i) => (
+        {step.value && (
+        <div className={classes.listDropzoneContainer}>
+          <List className={classes.interestList}>
+            <ListItem style={{ paddingLeft: 0 }}><ListItemText primary="Interest(s):" /></ListItem>
+            {step.value
+                && step.value.map((key, i) => (
                   <ListItem key={key} className={classes.nestedListItem}>
                     <ListItemText
-                      style={{whiteSpace: 'nowrap'}}
-                      secondary={step.value[i]} />
+                      style={{ whiteSpace: 'nowrap' }}
+                      secondary={step.value[i]}
+                    />
                   </ListItem>
                 ))
               }
-            </List>
-        </div>}
+          </List>
+        </div>
+        )}
       </Paper>
     );
   }

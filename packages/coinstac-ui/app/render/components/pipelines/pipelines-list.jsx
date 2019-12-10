@@ -93,7 +93,7 @@ class PipelinesList extends Component {
     const { notifyError } = this.props;
 
     this.props.deletePipeline(this.state.pipelineToDelete)
-      .catch(error => {
+      .catch((error) => {
         notifyError({ message: error.message });
       });
 
@@ -129,15 +129,17 @@ class PipelinesList extends Component {
         {otherPipelines.length > 0 && <Typography variant="h6">Other Pipelines</Typography>}
         {otherPipelines.length > 0 && otherPipelines.map(pipeline => this.getListItem(pipeline))}
 
-        {(!pipelines || !pipelines.length) &&
+        {(!pipelines || !pipelines.length)
+          && (
           <Alert bsStyle="info">
             No pipelines found
           </Alert>
+          )
         }
         <ListDeleteModal
           close={this.closeModal}
           deleteItem={this.deletePipeline}
-          itemName={'pipeline'}
+          itemName="pipeline"
           show={this.state.showModal}
         />
       </div>
@@ -165,8 +167,7 @@ const PipelinesListWithData = graphql(DELETE_PIPELINE_MUTATION,
     'deletePipeline',
     FETCH_ALL_PIPELINES_QUERY,
     'fetchAllPipelines'
-  )
-)(PipelinesList);
+  ))(PipelinesList);
 
 const connectedComponent = connect(mapStateToProps, { notifyError })(PipelinesListWithData);
 

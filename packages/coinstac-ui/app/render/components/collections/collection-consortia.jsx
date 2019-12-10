@@ -109,9 +109,9 @@ class CollectionConsortia extends Component {
     return (
       <div>
         <Form onSubmit={saveCollection}>
-          {consortia.length > 0 &&
-            associatedConsortia.length > 0 &&
-            <h3>Associated Consortia</h3>
+          {consortia.length > 0
+            && associatedConsortia.length > 0
+            && <h3>Associated Consortia</h3>
           }
           {consortia.length && consortia.map((cons) => {
             const associatedIndex = associatedConsortia.findIndex(c => c.id === cons.id);
@@ -119,7 +119,10 @@ class CollectionConsortia extends Component {
               return (
                 <Panel key={`${cons.id}-list-item`}>
                   <h4>{cons.name}</h4>
-                  <p>Runs: {associatedConsortia[associatedIndex].runs}</p>
+                  <p>
+Runs:
+                    {associatedConsortia[associatedIndex].runs}
+                  </p>
                   <LinkContainer className="pull-right" to={`/dashboard/consortia/${cons.id}`}>
                     <Button
                       bsStyle="info"
@@ -148,9 +151,9 @@ class CollectionConsortia extends Component {
             title="Select Consortia"
           >
             {consortia.map((cons) => {
-              if (cons.activePipelineId &&
-                  (cons.members.indexOf(user.id) > -1 || cons.owners.indexOf(user.id) > -1) &&
-                  associatedConsortia.findIndex(c => c.id === cons.id) === -1) {
+              if (cons.activePipelineId
+                  && (cons.members.indexOf(user.id) > -1 || cons.owners.indexOf(user.id) > -1)
+                  && associatedConsortia.findIndex(c => c.id === cons.id) === -1) {
                 return (
                   <MenuItem
                     eventKey={cons.id}
@@ -163,17 +166,20 @@ class CollectionConsortia extends Component {
               }
               return null;
             })}
-            {(!user.permissions.consortia ||
-              user.permissions.consortia.length === 0) &&
+            {(!user.permissions.consortia
+              || user.permissions.consortia.length === 0)
+              && (
               <MenuItem
-                eventKey={'no-cons-menuitem'}
-                key={'no-cons-menuitem'}
+                eventKey="no-cons-menuitem"
+                key="no-cons-menuitem"
               >
                 <em>No member and/or owned consortia</em>
               </MenuItem>
+              )
             }
           </DropdownButton>
-          {this.state.activeConsortium.name &&
+          {this.state.activeConsortium.name
+            && (
             <CollectionPipeline
               key={`${this.state.activeConsortium.id}-pipeline`}
               associatedConsortia={associatedConsortia}
@@ -185,6 +191,7 @@ class CollectionConsortia extends Component {
               setPipelineSteps={this.setPipelineSteps}
               updateConsortiumClientProps={this.updateConsortiumClientProps}
             />
+            )
           }
           <Button
             bsStyle="success"

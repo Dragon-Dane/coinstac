@@ -26,53 +26,53 @@ class MapsStep extends Component {
   }
 
   handleStep(step, type) {
-    let result = [];
+    const result = [];
     Object.keys(step).map((key, input) => {
       if (typeof step[key] === 'object' && type.includes('options') === false) {
-         let column = null;
-         Object.keys(step[key]).map((k, i) => {
-            if(type === 'data') {
-              if(this.props.consortium.stepIO[0]['data'][k] &&
-                this.props.consortium.stepIO[0]['data'][k]['column']){
-                column = this.props.consortium.stepIO[0]['data'][k]['column'];
-              }
-              result.push(
-                <MapsStepData
-                  getContainers={this.props.getContainers}
-                  key={'step-data-'+i+'-'+type}
-                  step={step[key][k]}
-                  type={type}
-                  index={k}
-                  column={column}
-                  removeMapStep={this.props.removeMapStep}
-                  rowArray={this.props.rowArray}
-                  setRowArray={this.props.setRowArray}
-                />
-              );
-              column = null;
-            } else {
-              if(this.props.consortium.stepIO[0]['covariates'][k] &&
-                this.props.consortium.stepIO[0]['covariates'][k]['column']){
-                column = this.props.consortium.stepIO[0]['covariates'][k]['column'];
-              }
-              result.push(
-                <MapsStepCovariate
-                  getContainers={this.props.getContainers}
-                  key={'step-cov-'+i+'-'+type}
-                  step={step[key][k]}
-                  type={type}
-                  index={k}
-                  column={column}
-                  removeMapStep={this.props.removeMapStep}
-                  rowArray={this.props.rowArray}
-                  setRowArray={this.props.setRowArray}
-                />
-              );
-              column = null;
+        let column = null;
+        Object.keys(step[key]).map((k, i) => {
+          if (type === 'data') {
+            if (this.props.consortium.stepIO[0].data[k]
+                && this.props.consortium.stepIO[0].data[k].column) {
+              column = this.props.consortium.stepIO[0].data[k].column;
             }
-         });
+            result.push(
+              <MapsStepData
+                getContainers={this.props.getContainers}
+                key={`step-data-${i}-${type}`}
+                step={step[key][k]}
+                type={type}
+                index={k}
+                column={column}
+                removeMapStep={this.props.removeMapStep}
+                rowArray={this.props.rowArray}
+                setRowArray={this.props.setRowArray}
+              />
+            );
+            column = null;
+          } else {
+            if (this.props.consortium.stepIO[0].covariates[k]
+                && this.props.consortium.stepIO[0].covariates[k].column) {
+              column = this.props.consortium.stepIO[0].covariates[k].column;
+            }
+            result.push(
+              <MapsStepCovariate
+                getContainers={this.props.getContainers}
+                key={`step-cov-${i}-${type}`}
+                step={step[key][k]}
+                type={type}
+                index={k}
+                column={column}
+                removeMapStep={this.props.removeMapStep}
+                rowArray={this.props.rowArray}
+                setRowArray={this.props.setRowArray}
+              />
+            );
+            column = null;
+          }
+        });
       } else {
-        result.push(<MapsStepValue step={step} key={'step-'+input} type={type} />);
+        result.push(<MapsStepValue step={step} key={`step-${input}`} type={type} />);
       }
     });
     return result;
@@ -87,15 +87,15 @@ class MapsStep extends Component {
 
     let showName = false;
 
-    if(name === 'covariates' || name === 'data'){
+    if (name === 'covariates' || name === 'data') {
       showName = true;
     }
 
     return (
       <div className={classes.section}>
-        {!showName ?
-          <Typography variant="h6">Options</Typography> :
-          <Typography variant="h6">{capitalize(name)}</Typography>
+        {!showName
+          ? <Typography variant="h6">Options</Typography>
+          : <Typography variant="h6">{capitalize(name)}</Typography>
         }
         <div ref="Steps">
           {this.handleStep(step, name)}

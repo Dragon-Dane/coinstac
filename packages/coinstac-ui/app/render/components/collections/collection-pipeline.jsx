@@ -12,9 +12,9 @@ import {
 
 class CollectionPipeline extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.activePipeline &&
-      nextProps.activePipeline.steps &&
-      this.props.pipelineSteps.length === 0) {
+    if (nextProps.activePipeline
+      && nextProps.activePipeline.steps
+      && this.props.pipelineSteps.length === 0) {
       this.props.setPipelineSteps(nextProps.activePipeline.steps);
     }
   }
@@ -31,9 +31,15 @@ class CollectionPipeline extends Component {
 
     return (
       <div>
-        {activePipeline &&
+        {activePipeline
+          && (
           <div>
-            <h3>{consortiumName}: {activePipeline.name}</h3>
+            <h3>
+              {consortiumName}
+:
+              {' '}
+              {activePipeline.name}
+            </h3>
             {activePipeline.steps.map((step, stepIndex) => (
               <Panel
                 header={<h3>{step.computations[0].meta.name}</h3>}
@@ -55,6 +61,7 @@ class CollectionPipeline extends Component {
               </Panel>
             ))}
           </div>
+          )
         }
       </div>
     );
@@ -77,12 +84,12 @@ CollectionPipeline.propTypes = {
 };
 
 const CollectionPipelineWithData = graphql(FETCH_PIPELINE_QUERY, getSelectAndSubProp(
-    'activePipeline',
-    PIPELINE_CHANGED_SUBSCRIPTION,
-    'pipelineId',
-    'subscribeToPipelines',
-    'pipelineChanged',
-    'fetchPipeline'
-  ))(CollectionPipeline);
+  'activePipeline',
+  PIPELINE_CHANGED_SUBSCRIPTION,
+  'pipelineId',
+  'subscribeToPipelines',
+  'pipelineChanged',
+  'fetchPipeline'
+))(CollectionPipeline);
 
 export default CollectionPipelineWithData;

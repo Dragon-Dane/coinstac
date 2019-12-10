@@ -6,7 +6,9 @@ import { Tab, Tabs } from 'react-bootstrap';
 import CollectionAbout from './collection-about';
 import CollectionFiles from './collection-files';
 import CollectionConsortia from './collection-consortia';
-import { getAssociatedConsortia, incrementRunCount, saveAssociatedConsortia, saveCollection } from '../../state/ducks/collections';
+import {
+  getAssociatedConsortia, incrementRunCount, saveAssociatedConsortia, saveCollection,
+} from '../../state/ducks/collections';
 import { getRunsForConsortium, saveLocalRun } from '../../state/ducks/runs';
 import { notifyInfo, notifySuccess } from '../../state/ducks/notifyAndLog';
 
@@ -94,35 +96,39 @@ class CollectionTabs extends Component {
               updateCollection={this.updateCollection}
             />
           </Tab>
-          {typeof this.state.collection.id !== 'undefined' ?
-            <Tab
-              eventKey={2}
-              title="Files"
-              style={styles.tab}
-            >
-              <CollectionFiles
-                collection={this.state.collection}
-                saveCollection={this.saveCollection}
-                updateCollection={this.updateCollection}
-              />
-            </Tab>
-          : ''}
-          {typeof this.state.collection.id !== 'undefined' ?
-            <Tab
-              eventKey={3}
-              title="Consortia"
-              style={styles.tab}
-            >
-              <CollectionConsortia
-                associatedConsortia={this.props.activeAssociatedConsortia}
-                collection={this.state.collection}
-                consortia={this.props.consortia}
-                saveCollection={this.saveCollection}
-                updateAssociatedConsortia={this.updateAssociatedConsortia}
-                updateCollection={this.updateCollection}
-              />
-            </Tab>
-          : ''}
+          {typeof this.state.collection.id !== 'undefined'
+            ? (
+              <Tab
+                eventKey={2}
+                title="Files"
+                style={styles.tab}
+              >
+                <CollectionFiles
+                  collection={this.state.collection}
+                  saveCollection={this.saveCollection}
+                  updateCollection={this.updateCollection}
+                />
+              </Tab>
+            )
+            : ''}
+          {typeof this.state.collection.id !== 'undefined'
+            ? (
+              <Tab
+                eventKey={3}
+                title="Consortia"
+                style={styles.tab}
+              >
+                <CollectionConsortia
+                  associatedConsortia={this.props.activeAssociatedConsortia}
+                  collection={this.state.collection}
+                  consortia={this.props.consortia}
+                  saveCollection={this.saveCollection}
+                  updateAssociatedConsortia={this.updateAssociatedConsortia}
+                  updateCollection={this.updateCollection}
+                />
+              </Tab>
+            )
+            : ''}
         </Tabs>
       </div>
     );
@@ -163,5 +169,4 @@ export default connect(mapStateToProps,
     saveAssociatedConsortia,
     saveCollection,
     saveLocalRun,
-  }
-)(CollectionTabs);
+  })(CollectionTabs);

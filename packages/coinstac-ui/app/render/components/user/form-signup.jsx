@@ -38,13 +38,13 @@ class FormSignup extends Component {
     };
   }
 
-  handleChange = name => event => {
+  handleChange = name => (event) => {
     this.setState({
       [name]: event.target.value,
     });
   };
 
-  handleSubmit = evt => {
+  handleSubmit = (evt) => {
     evt.preventDefault();
 
     const { onSubmit } = this.props;
@@ -85,11 +85,13 @@ class FormSignup extends Component {
       <Paper className={classes.paper}>
         <form onSubmit={this.handleSubmit}>
           {
-            error &&
+            error
+            && (
             <p
               className={classNames(classes.bottomMargin, classes.error)}
               dangerouslySetInnerHTML={{ __html: error }}
             />
+            )
           }
           <TextField
             label="Name"

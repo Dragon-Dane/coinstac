@@ -54,23 +54,23 @@ class ComputationSubmission extends Component { // eslint-disable-line
 
   submitSchema() {
     this.props.submitSchema(this.state.activeSchema)
-    .then((res) => {
-      this.setState({ activeSchema: {} });
-      if (res.data.addComputation) {
-        this.setState({ submissionSuccess: true });
-        this.props.router.push('/dashboard/computations');
-        this.props.notifySuccess({
-          message: 'Computation Submission Successful',
-          autoDismiss: 5,
-        });
-      } else {
+      .then((res) => {
+        this.setState({ activeSchema: {} });
+        if (res.data.addComputation) {
+          this.setState({ submissionSuccess: true });
+          this.props.router.push('/dashboard/computations');
+          this.props.notifySuccess({
+            message: 'Computation Submission Successful',
+            autoDismiss: 5,
+          });
+        } else {
+          this.setState({ submissionSuccess: false });
+        }
+      })
+      .catch(({ graphQLErrors }) => {
+        console.log(graphQLErrors);
         this.setState({ submissionSuccess: false });
-      }
-    })
-    .catch(({ graphQLErrors }) => {
-      console.log(graphQLErrors);
-      this.setState({ submissionSuccess: false });
-    });
+      });
   }
 
   render() {

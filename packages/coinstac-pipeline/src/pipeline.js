@@ -80,8 +80,8 @@ module.exports = {
         const packageState = () => {
           const troller = this.pipelineSteps[this.currentStep].controllerState;
           let owner = '';
-          if (this.pipelineSteps[this.currentStep].inputMap.meta &&
-            this.pipelineSteps[this.currentStep].inputMap.meta.owner) {
+          if (this.pipelineSteps[this.currentStep].inputMap.meta
+            && this.pipelineSteps[this.currentStep].inputMap.meta.owner) {
             owner = this.pipelineSteps[this.currentStep].inputMap.meta.owner;
           }
           this.currentState = {

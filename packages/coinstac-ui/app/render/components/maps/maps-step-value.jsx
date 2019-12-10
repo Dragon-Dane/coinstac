@@ -24,13 +24,13 @@ const styles = theme => ({
   },
   mediumWeight: {
     fontWeight: 500,
-  }
+  },
 });
 
 class MapsStepValue extends Component {
   componentDidUpdate() {
     if (this.refs.Container) {
-      let Container = ReactDOM.findDOMNode(this.refs.Container);
+      const Container = ReactDOM.findDOMNode(this.refs.Container);
       this.props.getContainers(Container);
     }
   }
@@ -44,7 +44,7 @@ class MapsStepValue extends Component {
 
     let value = '';
 
-    switch(step.value) {
+    switch (step.value) {
       case (typeof step.value === 'boolean' && step.value === true):
         value = 'true';
         break;
@@ -58,7 +58,7 @@ class MapsStepValue extends Component {
         value = step.value;
     }
 
-    let label = type.replace(/\_/g, ' ');
+    const label = type.replace(/\_/g, ' ');
 
     return (
       <Paper

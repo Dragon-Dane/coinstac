@@ -41,73 +41,43 @@ class CollectionFiles extends Component {
 
   addFileGroup() {
     ipcPromise.send('open-dialog', this.state.newFile.org)
-    .then((obj) => {
-      let newFiles;
-
-      const fileGroupId = shortid.generate();
-
-      if (obj.error) {
-        this.setState({ filesError: obj.error });
-      } else {
-        const name = `Group ${Object.keys(this.props.collection.fileGroups).length + 1} (${obj.extension.toUpperCase()})`;
-        if (this.state.newFile.org === 'metafile') {
-          newFiles = {
-            ...obj,
-            name,
-            id: fileGroupId,
-            date: new Date().getTime(),
-            firstRow: obj.metaFile[0].join(', '),
-            org: this.state.newFile.org,
-          };
-        } else {
-          newFiles = {
-            name,
-            id: fileGroupId,
-            extension: obj.extension,
-            files: [...obj.paths.sort(naturalSort)],
-            date: new Date().getTime(),
-            org: this.state.newFile.org,
-          };
-
-          this.setState({ showFiles: { [newFiles.date]: false } });
-        }
-
-        this.setState({ filesError: null });
-        this.props.updateCollection(
-          {
-            fileGroups: {
-              ...this.props.collection.fileGroups,
-              [fileGroupId]: newFiles,
-            },
-          },
-          this.props.saveCollection
-        );
-      }
-    })
-    .catch(console.log);
-  }
-
-  addFilesToGroup(groupId, extension) {
-    return () => {
-      ipcPromise.send('open-dialog', this.state.newFile.org)
       .then((obj) => {
-        if (obj.error || (obj.extension && obj.extension !== extension)) {
-          let filesError;
-          if (obj.error) {
-            filesError = obj.error;
-          } else {
-            filesError = `New files don't match group extension - ${extension} & ${obj.extension}.`;
-          }
-          this.setState({ filesError });
-        } else {
-          const groups = { ...this.props.collection.fileGroups };
-          groups[groupId].files = groups[groupId].files.concat(obj.paths);
-          groups[groupId].files.sort(naturalSort);
+        let newFiles;
 
+        const fileGroupId = shortid.generate();
+
+        if (obj.error) {
+          this.setState({ filesError: obj.error });
+        } else {
+          const name = `Group ${Object.keys(this.props.collection.fileGroups).length + 1} (${obj.extension.toUpperCase()})`;
+          if (this.state.newFile.org === 'metafile') {
+            newFiles = {
+              ...obj,
+              name,
+              id: fileGroupId,
+              date: new Date().getTime(),
+              firstRow: obj.metaFile[0].join(', '),
+              org: this.state.newFile.org,
+            };
+          } else {
+            newFiles = {
+              name,
+              id: fileGroupId,
+              extension: obj.extension,
+              files: [...obj.paths.sort(naturalSort)],
+              date: new Date().getTime(),
+              org: this.state.newFile.org,
+            };
+
+            this.setState({ showFiles: { [newFiles.date]: false } });
+          }
+
+          this.setState({ filesError: null });
           this.props.updateCollection(
             {
               fileGroups: {
-                ...groups,
+                ...this.props.collection.fileGroups,
+                [fileGroupId]: newFiles,
               },
             },
             this.props.saveCollection
@@ -115,6 +85,36 @@ class CollectionFiles extends Component {
         }
       })
       .catch(console.log);
+  }
+
+  addFilesToGroup(groupId, extension) {
+    return () => {
+      ipcPromise.send('open-dialog', this.state.newFile.org)
+        .then((obj) => {
+          if (obj.error || (obj.extension && obj.extension !== extension)) {
+            let filesError;
+            if (obj.error) {
+              filesError = obj.error;
+            } else {
+              filesError = `New files don't match group extension - ${extension} & ${obj.extension}.`;
+            }
+            this.setState({ filesError });
+          } else {
+            const groups = { ...this.props.collection.fileGroups };
+            groups[groupId].files = groups[groupId].files.concat(obj.paths);
+            groups[groupId].files.sort(naturalSort);
+
+            this.props.updateCollection(
+              {
+                fileGroups: {
+                  ...groups,
+                },
+              },
+              this.props.saveCollection
+            );
+          }
+        })
+        .catch(console.log);
     };
   }
 
@@ -141,15 +141,15 @@ class CollectionFiles extends Component {
 
       // Props delete assocCons featuring groupId
       this.props.unmapAssociatedConsortia(this.props.collection.associatedConsortia)
-      .then(() => {
-        this.props.updateCollection(
-          {
-            fileGroups: { ...groups },
-            associatedConsortia: [],
-          },
-          this.props.saveCollection
-        );
-      });
+        .then(() => {
+          this.props.updateCollection(
+            {
+              fileGroups: { ...groups },
+              associatedConsortia: [],
+            },
+            this.props.saveCollection
+          );
+        });
     };
   }
 
@@ -209,16 +209,19 @@ class CollectionFiles extends Component {
             </Button>
           </Panel>
 
-          {this.state.filesError &&
+          {this.state.filesError
+            && (
             <Alert bsStyle="danger" style={{ ...styles.topMargin, textAlign: 'left', bottomMargin: 20 }}>
               <h4 style={{ fontStyle: 'normal' }}>File Error</h4>
               {this.state.filesError}
             </Alert>
+            )
           }
 
           {Object.values(collection.fileGroups).map(group => (
             <Panel key={`${group.date}-${group.extension}-${group.firstRow}`}>
-              {group.org === 'metafile' &&
+              {group.org === 'metafile'
+                && (
                 <div>
                   <Button
                     bsStyle="danger"
@@ -230,23 +233,35 @@ class CollectionFiles extends Component {
                     Remove File Group
                   </Button>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Name:</span> {group.name}
+                    <span className="bold">Name:</span>
+                    {' '}
+                    {group.name}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Date:</span> {new Date(group.date).toUTCString()}
+                    <span className="bold">Date:</span>
+                    {' '}
+                    {new Date(group.date).toUTCString()}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Extension:</span> {group.extension}
+                    <span className="bold">Extension:</span>
+                    {' '}
+                    {group.extension}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Meta File Path:</span> {group.metaFilePath}
+                    <span className="bold">Meta File Path:</span>
+                    {' '}
+                    {group.metaFilePath}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">First Row:</span> {group.firstRow}
+                    <span className="bold">First Row:</span>
+                    {' '}
+                    {group.firstRow}
                   </p>
                 </div>
+                )
               }
-              {group.org === 'manual' &&
+              {group.org === 'manual'
+                && (
                 <div>
                   <Button
                     bsStyle="danger"
@@ -258,13 +273,19 @@ class CollectionFiles extends Component {
                     Remove File Group
                   </Button>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Name:</span> {group.name}
+                    <span className="bold">Name:</span>
+                    {' '}
+                    {group.name}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Date:</span> {new Date(group.date).toUTCString()}
+                    <span className="bold">Date:</span>
+                    {' '}
+                    {new Date(group.date).toUTCString()}
                   </p>
                   <p style={styles.fileLabelRow}>
-                    <span className="bold">Extension:</span> {group.extension}
+                    <span className="bold">Extension:</span>
+                    {' '}
+                    {group.extension}
                   </p>
                   <Accordion>
                     <Panel
@@ -278,8 +299,8 @@ class CollectionFiles extends Component {
                       >
                         Add More Files to Group
                       </Button>
-                      {group.files.map((file, fileIndex) =>
-                        (<div key={file} style={{ marginBottom: 5 }}>
+                      {group.files.map((file, fileIndex) => (
+                        <div key={file} style={{ marginBottom: 5 }}>
                           <button
                             aria-label="Delete"
                             style={{ border: 'none', background: 'none' }}
@@ -289,11 +310,12 @@ class CollectionFiles extends Component {
                             <span aria-hidden="true" className="glyphicon glyphicon-remove" style={{ color: 'red' }} />
                           </button>
                           {file}
-                        </div>)
-                      )}
+                        </div>
+                      ))}
                     </Panel>
                   </Accordion>
                 </div>
+                )
               }
             </Panel>
           ))}

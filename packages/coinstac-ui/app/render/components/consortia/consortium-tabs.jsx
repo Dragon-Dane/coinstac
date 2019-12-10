@@ -65,7 +65,6 @@ class ConsortiumTabs extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-
     const tabId = parseInt(this.props.params.tabId);
     if (this.props.params.tabId && tabId !== this.state.selectedTabIndex) {
       this.handleSelect(null, tabId);
@@ -83,7 +82,7 @@ class ConsortiumTabs extends Component {
 
     if (nextProps.activeConsortium) {
       const { activeConsortium: { __typename, ...other } } = nextProps;
-      if (this.props.routes[3].path !== 'new' || (this.props.routes[3].path === 'new' && this.state.consortium.id) ) {
+      if (this.props.routes[3].path !== 'new' || (this.props.routes[3].path === 'new' && this.state.consortium.id)) {
         const consortiumUsers = this.getConsortiumUsers(other);
         this.setState({ consortium: { ...other }, consortiumUsers });
       }
@@ -100,8 +99,8 @@ class ConsortiumTabs extends Component {
     }
   }
 
-  getConsortiumUsers = consortium => {
-    let consortiumUsers = [];
+  getConsortiumUsers = (consortium) => {
+    const consortiumUsers = [];
 
     consortium.owners.forEach(user => consortiumUsers.push({ id: user, owner: true, member: true }));
     consortium.members
@@ -148,41 +147,41 @@ class ConsortiumTabs extends Component {
     this.setState({ savingStatus: 'pending' });
 
     this.props.saveConsortium(this.state.consortium)
-    .then(({ data: { saveConsortium: { __typename, ...other } } }) => {
-      let unsubscribeConsortia = this.state.unsubscribeConsortia;
+      .then(({ data: { saveConsortium: { __typename, ...other } } }) => {
+        let { unsubscribeConsortia } = this.state;
 
-      this.props.saveAssociatedConsortia({ ...other });
+        this.props.saveAssociatedConsortia({ ...other });
 
-      if (!unsubscribeConsortia) {
-        unsubscribeConsortia = this.props.subscribeToConsortia(other.id);
-      }
+        if (!unsubscribeConsortia) {
+          unsubscribeConsortia = this.props.subscribeToConsortia(other.id);
+        }
 
-      const consortiumUsers = this.getConsortiumUsers(other);
+        const consortiumUsers = this.getConsortiumUsers(other);
 
-      this.setState({
-        consortium: { ...other },
-        consortiumUsers,
-        unsubscribeConsortia,
-        savingStatus: 'success',
-      });
+        this.setState({
+          consortium: { ...other },
+          consortiumUsers,
+          unsubscribeConsortia,
+          savingStatus: 'success',
+        });
 
-      this.props.notifySuccess({
-        message: 'Consortium Saved',
-        autoDismiss: 5,
-        action: {
-          label: 'View Consortia List',
-          callback: () => {
-            this.props.router.push('/dashboard/consortia/');
+        this.props.notifySuccess({
+          message: 'Consortium Saved',
+          autoDismiss: 5,
+          action: {
+            label: 'View Consortia List',
+            callback: () => {
+              this.props.router.push('/dashboard/consortia/');
+            },
           },
-        },
-      });
-    })
-    .catch(({ graphQLErrors }) => {
-      console.log(graphQLErrors);
-      this.setState({
-        savingStatus: 'fail',
+        });
       })
-    });
+      .catch(({ graphQLErrors }) => {
+        console.log(graphQLErrors);
+        this.setState({
+          savingStatus: 'fail',
+        });
+      });
   }
 
   updateConsortium(update) {
@@ -202,7 +201,9 @@ class ConsortiumTabs extends Component {
       classes,
     } = this.props;
     const { user } = this.props.auth;
-    const { selectedTabIndex, consortium, consortiumUsers, savingStatus } = this.state;
+    const {
+      selectedTabIndex, consortium, consortiumUsers, savingStatus,
+    } = this.state;
 
     const isEditingConsortium = !!this.state.consortium.id;
 

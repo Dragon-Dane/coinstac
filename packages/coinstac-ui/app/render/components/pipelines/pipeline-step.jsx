@@ -27,9 +27,9 @@ const styles = theme => ({
 });
 
 const capitalize = (s) => {
-  if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
+  if (typeof s !== 'string') return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 
 const stepSource = {
   beginDrag(props) {
@@ -73,8 +73,7 @@ const collectDrag = (connect, monitor) => {
   };
 };
 
-const collectDrop = connect =>
-  ({ connectDropTarget: connect.dropTarget() });
+const collectDrop = connect => ({ connectDropTarget: connect.dropTarget() });
 
 class PipelineStep extends Component {
   constructor(props) {
@@ -113,7 +112,11 @@ class PipelineStep extends Component {
             if (typeof localOutput[1] === 'object') {
               const output = [(
                 <Typography key={`${id}-${localOutput[0]}-output`} variant="body1">
-                  {localOutput[1].label} ({localOutput[1].type})
+                  {localOutput[1].label}
+                  {' '}
+(
+                  {localOutput[1].type}
+)
                 </Typography>
               )];
 
@@ -156,24 +159,24 @@ class PipelineStep extends Component {
     const { id, computations } = step;
 
     let Inputs = [];
-    let defaultInputs = {};
+    const defaultInputs = {};
 
     if (compIO !== null) {
-      let newArray = [];
+      const newArray = [];
       Object.keys(compIO.computation.input).map((key, index) => {
-        let value = Object.create(compIO.computation.input[key]);
-        value['value'] = compIO.computation.input[key];
-        value['key'] = key;
+        const value = Object.create(compIO.computation.input[key]);
+        value.value = compIO.computation.input[key];
+        value.key = key;
         newArray.push(value);
-        if(value['value'].default !== null && key !== 'covariates') {
-          let v = value['value'].default;
-          if( v === 0 ){
+        if (value.value.default !== null && key !== 'covariates') {
+          let v = value.value.default;
+          if (v === 0) {
             v = '0';
           }
           defaultInputs[key] = { value: v };
         }
       });
-      Inputs = newArray.sort(function (a, b) {
+      Inputs = newArray.sort((a, b) => {
         return a.value.order - b.value.order;
       });
     }
@@ -195,12 +198,12 @@ class PipelineStep extends Component {
     });
 
     return connectDragSource(connectDropTarget(
-      <div key={'step-'+step.id}>
+      <div key={`step-${step.id}`}>
         <ExpansionPanel className="pipeline-step" style={{ ...styles.draggable, opacity: isDragging ? 0 : 1 }}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="headline">{computations[0].meta.name}</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails className={classes.expansionPanelContent} key={'step-exp-'+step.id}>
+          <ExpansionPanelDetails className={classes.expansionPanelContent} key={`step-exp-${step.id}`}>
             <div className={classes.inputParametersContainer}>
               <Typography variant="title">Input Parameters:</Typography>
               <Button
@@ -231,17 +234,17 @@ class PipelineStep extends Component {
                 );
                 if (localInput.group) {
                   Groups[localInput.group].push(piplineStepInputComponent);
-                }else{
+                } else {
                   return piplineStepInputComponent;
                 }
               })
             }
             <div>
-              {Groups &&
-                Object.entries(Groups).length > 0
+              {Groups
+                && Object.entries(Groups).length > 0
                 && Object.entries(Groups).map((group) => {
-                  let name = group[0];
-                  let items = group[1];
+                  const name = group[0];
+                  const items = group[1];
                   return (
                     <ExpansionPanel className="pipeline-step" style={{ ...styles.draggable, opacity: isDragging ? 0 : 1, margin: '1rem 0' }}>
                       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -254,7 +257,7 @@ class PipelineStep extends Component {
                         {items && items.map((item) => { return item; })}
                       </ExpansionPanelDetails>
                     </ExpansionPanel>
-                  )
+                  );
                 })
               }
             </div>
@@ -296,8 +299,7 @@ const PipelineStepWithData = compose(
     props: ({ data: { fetchComputation } }) => ({
       possibleInputs: fetchComputation,
     }),
-    options: ({ previousComputationIds }) =>
-      ({ variables: { computationIds: previousComputationIds } }),
+    options: ({ previousComputationIds }) => ({ variables: { computationIds: previousComputationIds } }),
   })
 )(PipelineStep);
 

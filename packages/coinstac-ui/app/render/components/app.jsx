@@ -19,8 +19,8 @@ const styles = {
         boxShadow: 'none',
         fontWeight: 'bold', // This might not be necessary. Use your judgement.
       },
-    }
-  }
+    },
+  },
 };
 
 class App extends Component { // eslint-disable-line react/prefer-stateless-function

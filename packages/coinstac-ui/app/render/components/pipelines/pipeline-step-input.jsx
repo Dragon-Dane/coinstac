@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ipcPromise from 'ipc-promise';
 import fs from 'fs';
-//import ReGrid from 'rethinkdb-regrid';
+// import ReGrid from 'rethinkdb-regrid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -24,7 +24,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import update from 'immutability-helper';
 import PipelineStepMemberTable from './pipeline-step-member-table';
 
-//var bucket = ReGrid({db: 'coinstac'});
+// var bucket = ReGrid({db: 'coinstac'});
 
 const styles = theme => ({
   addObjButton: {
@@ -55,11 +55,13 @@ class PipelineStepInput extends Component {
   }
 
   componentDidUpdate = () => {
-    const { objKey, objParams, updateStep, step } = this.props;
+    const {
+      objKey, objParams, updateStep, step,
+    } = this.props;
     if (step && objKey === 'data' && !step.dataMeta) {
       updateStep({
         ...step,
-        dataMeta: objParams
+        dataMeta: objParams,
       });
     }
   }
@@ -80,7 +82,7 @@ class PipelineStepInput extends Component {
     if (!this.state.isClientProp && value === 'DELETE_VAR') {
       delete inputCopy[prop];
       return { ...inputCopy };
-    } else if (!this.state.isClientProp) {
+    } if (!this.state.isClientProp) {
       return { ...inputCopy, [prop]: value };
     }
 
@@ -193,13 +195,13 @@ class PipelineStepInput extends Component {
   }
 
   makeNumberRange(min, max, step) {
-    let range = [];
-    if(!step){
+    const range = [];
+    if (!step) {
       step = 1;
     }
     while (parseFloat(min) <= parseFloat(max)) {
-       range.push(min);
-       min = min + step;
+      range.push(min);
+      min += step;
     }
     return range;
   }
@@ -256,13 +258,13 @@ class PipelineStepInput extends Component {
     let isFromCache;
     let visibility = 'block';
 
-    if (objParams.conditional &&
-      objParams.conditional.variable &&
-      step.inputMap) {
+    if (objParams.conditional
+      && objParams.conditional.variable
+      && step.inputMap) {
       visibility = 'none';
-      if (step.inputMap[objParams.conditional.variable] &&
-          step.inputMap[objParams.conditional.variable].value ===
-          objParams.conditional.value) {
+      if (step.inputMap[objParams.conditional.variable]
+          && step.inputMap[objParams.conditional.variable].value
+          === objParams.conditional.value) {
         visibility = 'block';
       }
     }
@@ -282,23 +284,27 @@ class PipelineStepInput extends Component {
     }
 
     return (
-      <div style={{position: 'relative', display: visibility}} key={'pipestep-'+objKey}>
+      <div style={{ position: 'relative', display: visibility }} key={`pipestep-${objKey}`}>
         {
           (objKey === 'covariates' || objKey === 'data')
           && (
             <div style={{ paddingLeft: 10 }}>
               <Typography variant="subtitle2">
                 <span>{ objParams.label }</span>
-                { objParams.tooltip &&
-                  <Tooltip title={ objParams.tooltip } placement="right-start">
+                { objParams.tooltip
+                  && (
+                  <Tooltip title={objParams.tooltip} placement="right-start">
                     <InfoIcon />
-                  </Tooltip> }
+                  </Tooltip>
+                  ) }
               </Typography>
               {
-                objParams.tooltip &&
-                <Tooltip title={ objParams.tooltip } placement="right-start">
+                objParams.tooltip
+                && (
+                <Tooltip title={objParams.tooltip} placement="right-start">
                   <InfoIcon />
                 </Tooltip>
+                )
               }
               <Button
                 variant="contained"
@@ -331,13 +337,17 @@ class PipelineStepInput extends Component {
               <div>
                 {
                   objParams.label
-                  && <Typography variant="subtitle2">
+                  && (
+                  <Typography variant="subtitle2">
                     <span>{ objParams.label }</span>
-                    { objParams.tooltip &&
-                      <Tooltip title={ objParams.tooltip } placement="right-start">
+                    { objParams.tooltip
+                      && (
+                      <Tooltip title={objParams.tooltip} placement="right-start">
                         <InfoIcon />
-                      </Tooltip> }
+                      </Tooltip>
+                      ) }
                   </Typography>
+                  )
                 }
                 {
                   objParams.description
@@ -383,8 +393,7 @@ class PipelineStepInput extends Component {
                       onChange={event => updateStep({
                         ...step,
                         inputMap: this.getNewObj(objKey,
-                          event.target.value ? { value: event.target.value } : 'DELETE_VAR'
-                        ),
+                          event.target.value ? { value: event.target.value } : 'DELETE_VAR'),
                       })}
                       value={
                         step.inputMap[objKey] && 'value' in step.inputMap[objKey]
@@ -403,8 +412,7 @@ class PipelineStepInput extends Component {
                       onChange={event => updateStep({
                         ...step,
                         inputMap: this.getNewObj(objKey,
-                          event.target.value ? { value: parseFloat(event.target.value) } : 'DELETE_VAR'
-                        ),
+                          event.target.value ? { value: parseFloat(event.target.value) } : 'DELETE_VAR'),
                       })}
                       type="number"
                       value={
@@ -490,7 +498,7 @@ class PipelineStepInput extends Component {
                                 }),
                               })}
                             />
-                          {/*<CloseIcon style={{color: 'red'}} />*/}
+                            {/* <CloseIcon style={{color: 'red'}} /> */}
                           </div>
                         ))}
                       </div>
@@ -544,8 +552,8 @@ class PipelineStepInput extends Component {
                         ),
                       })}
                       value={step.inputMap[objKey] && 'value' in step.inputMap[objKey]
-                          ? step.inputMap[objKey].value
-                          : parseFloat(objParams.default)
+                        ? step.inputMap[objKey].value
+                        : parseFloat(objParams.default)
                       }
                     >
                       {
@@ -553,7 +561,7 @@ class PipelineStepInput extends Component {
                           <MenuItem
                             key={`${val}-select-option`}
                             value={parseFloat(val)}
-                            selected={val === objParams.default ? true : false}
+                            selected={val === objParams.default}
                           >
                             {val.toString()}
                           </MenuItem>
@@ -598,8 +606,7 @@ class PipelineStepInput extends Component {
                       onChange={event => updateStep({
                         ...step,
                         inputMap: this.getNewObj(objKey,
-                          event.target.checked ? { value: event.target.checked } : 'DELETE_VAR'
-                        ),
+                          event.target.checked ? { value: event.target.checked } : 'DELETE_VAR'),
                       })}
                       value={
                         step.inputMap[objKey] && 'value' in step.inputMap[objKey]
@@ -627,10 +634,9 @@ class PipelineStepInput extends Component {
                       onChange={event => updateStep({
                         ...step,
                         inputMap: this.getNewObj(objKey,
-                          event.target.checked ?
-                          { value: true } :
-                          { value: false }
-                        ),
+                          event.target.checked
+                            ? { value: true }
+                            : { value: false }),
                       })}
                       checked={
                         step.inputMap[objKey]
@@ -643,7 +649,7 @@ class PipelineStepInput extends Component {
                   )
                 }
               </div>
-              <div style={{position: 'absolute', right: '0'}}>
+              <div style={{ position: 'absolute', right: '0' }}>
                 <Button
                   id={`input-source-${objKey}-dropdown`}
                   disabled={!owner || !objParams.type || isValue}
@@ -680,8 +686,7 @@ class PipelineStepInput extends Component {
                                     step: itemObj.possibleInputIndex,
                                     variable: itemInput[0],
                                   },
-                                }
-                              ),
+                                }),
                             })}
                           >
                             {`Computation ${itemObj.possibleInputIndex + 1}: ${itemInput[1].label}`}

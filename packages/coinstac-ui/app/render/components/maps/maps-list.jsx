@@ -12,8 +12,8 @@ class MapsList extends Component {
     super(props);
 
     this.state = {
-      consortium: this.props.consortium
-    }
+      consortium: this.props.consortium,
+    };
 
     this.setConsortium = this.setConsortium.bind(this);
   }
@@ -34,17 +34,17 @@ class MapsList extends Component {
   }
 
   isMember(userId, groupArr) {
-    if(userId && groupArr){
+    if (userId && groupArr) {
       return groupArr.indexOf(userId) !== -1;
     }
-  };
+  }
 
   getMapItem = (consortium) => {
     const { user } = this.props.auth;
     const { pipelines } = this.props;
-    let pipeline = pipelines.find( pipeline => pipeline.id === consortium.activePipelineId );
-    if (pipeline && this.isMember(user.id, consortium.owners) ||
-      pipeline && this.isMember(user.id, consortium.members)) {
+    const pipeline = pipelines.find(pipeline => pipeline.id === consortium.activePipelineId);
+    if (pipeline && this.isMember(user.id, consortium.owners)
+      || pipeline && this.isMember(user.id, consortium.members)) {
       return (
         <MapsItem
           key={`${consortium.id}-list-item`}
@@ -84,32 +84,34 @@ class MapsList extends Component {
 
     return (
       <div>
-      {consortium && mapId ?
-        <MapsEdit
-          consortia={consortia}
-          consortium={consortium}
-          mapped={
+        {consortium && mapId
+          ? (
+            <MapsEdit
+              consortia={consortia}
+              consortium={consortium}
+              mapped={
             this.getMapped(consortium)
           }
-          pipelines={this.props.pipelines}
-          runs={this.props.runs}
-        />:
-        <div>
-          <div className="page-header">
-            <Typography variant="h4">
+              pipelines={this.props.pipelines}
+              runs={this.props.runs}
+            />
+          ) : (
+            <div>
+              <div className="page-header">
+                <Typography variant="h4">
               Maps
-            </Typography>
-          </div>
-          <Grid
-            container
-            spacing={16}
-            direction="row"
-            alignItems="stretch"
-          >
-            {consortia && consortia.map(cons => this.getMapItem(cons))}
-          </Grid>
-        </div>
-      }
+                </Typography>
+              </div>
+              <Grid
+                container
+                spacing={16}
+                direction="row"
+                alignItems="stretch"
+              >
+                {consortia && consortia.map(cons => this.getMapItem(cons))}
+              </Grid>
+            </div>
+          )}
       </div>
     );
   }
@@ -125,5 +127,4 @@ const mapStateToProps = ({ auth, collections: { associatedConsortia } }) => {
 };
 
 export default connect(mapStateToProps,
-  {}
-)(MapsList);
+  {})(MapsList);

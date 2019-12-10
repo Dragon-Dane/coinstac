@@ -121,7 +121,9 @@ class ConsortiaList extends Component {
     const actions = [];
     const text = [];
     let isMapped = false;
-    const { classes, pipelines, associatedConsortia, runs } = this.props;
+    const {
+      classes, pipelines, associatedConsortia, runs,
+    } = this.props;
 
     if (associatedConsortia.length > 0) {
       const assocCons = associatedConsortia.find(c => c.id === consortium.id);
@@ -168,8 +170,8 @@ class ConsortiaList extends Component {
           showDetails
           width={40}
           mapped={
-            consortium.mappedForRun &&
-              consortium.mappedForRun.indexOf(user.id) !== -1
+            consortium.mappedForRun
+              && consortium.mappedForRun.indexOf(user.id) !== -1
           }
         />
       ));
@@ -285,7 +287,7 @@ class ConsortiaList extends Component {
             consortium
           )
         }
-        itemRoute={'/dashboard/consortia'}
+        itemRoute="/dashboard/consortia"
       />
     );
   }
@@ -305,10 +307,10 @@ class ConsortiaList extends Component {
 
   deleteConsortium() {
     this.props.removeCollectionsFromAssociatedConsortia(this.state.consortiumToDelete, true)
-    .then(() => {
-      this.props.deleteConsortiumById(this.state.consortiumToDelete);
-      this.closeModal();
-    });
+      .then(() => {
+        this.props.deleteConsortiumById(this.state.consortiumToDelete);
+        this.closeModal();
+      });
   }
 
   joinConsortium(consortiumId, activePipelineId) {
@@ -348,22 +350,22 @@ class ConsortiaList extends Component {
 
   leaveConsortium(consortiumId) {
     this.props.removeCollectionsFromAssociatedConsortia(consortiumId, true)
-    .then(() => {
-      this.props.leaveConsortium(consortiumId);
-    });
+      .then(() => {
+        this.props.leaveConsortium(consortiumId);
+      });
   }
 
   stopPipeline(pipelineId) {
     return () => {
       const { client, runs } = this.props;
-      
-      const presentRun = runs.reduce( (prev, curr) => { 
-        return prev.startDate > curr.startDate ? prev : curr ;
+
+      const presentRun = runs.reduce((prev, curr) => {
+        return prev.startDate > curr.startDate ? prev : curr;
       });
       const runId = presentRun.id;
-      
+
       ipcRenderer.send('stop-pipeline', { pipelineId, runId });
-    }
+    };
   }
 
   startPipeline(consortiumId, activePipelineId) {

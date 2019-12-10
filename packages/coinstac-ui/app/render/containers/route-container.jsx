@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 export default class RouteContainer extends Component { // eslint-disable-line
   render() {
-    const { children, computations, consortia, pipelines, runs } = this.props;
+    const {
+      children, computations, consortia, pipelines, runs,
+    } = this.props;
     const childrenWithProps = React.cloneElement(children, {
       computations,
       consortia,

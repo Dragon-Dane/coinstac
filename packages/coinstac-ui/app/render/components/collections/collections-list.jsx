@@ -65,18 +65,20 @@ class CollectionsList extends Component {
             deleteItem={this.openModal}
             owner
             itemOptions={{ actions: [], text: [] }}
-            itemRoute={'/dashboard/collections'}
+            itemRoute="/dashboard/collections"
           />
         ))}
-        {collections.length === 0 &&
+        {collections.length === 0
+          && (
           <Alert bsStyle="info">
             No collections found
           </Alert>
+          )
         }
         <ListDeleteModal
           close={this.closeModal}
           deleteItem={this.deleteCollection}
-          itemName={'collection'}
+          itemName="collection"
           show={this.state.showModal}
         />
       </div>

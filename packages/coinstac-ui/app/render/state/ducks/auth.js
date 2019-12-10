@@ -200,16 +200,16 @@ export default function reducer(state = INITIAL_STATE, { type, payload }) {
         return state;
       }
 
-      if (locationStacks.length > 1 &&
-        locationStacks[locationStacks.length - 2] === pathname) {
+      if (locationStacks.length > 1
+        && locationStacks[locationStacks.length - 2] === pathname) {
         locationStacks.pop();
 
         return {
           ...state,
           locationStacks,
-        }
+        };
       }
-  
+
       return {
         ...state,
         locationStacks: [...locationStacks, pathname],

@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ipcRenderer } from 'electron';
 import { MuiThemeProvider, withStyles } from '@material-ui/core/styles';
-import theme from '../../styles/material-ui/theme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Drawer from '@material-ui/core/Drawer';
@@ -12,6 +11,7 @@ import Icon from '@material-ui/core/Icon';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
+import theme from '../../styles/material-ui/theme';
 import DashboardNav from './dashboard-nav';
 import UserAccountController from '../user/user-account-controller';
 import {
@@ -28,7 +28,9 @@ import {
   syncRemoteLocalPipelines,
   mapConsortiumData,
 } from '../../state/ducks/collections';
-import { getLocalRun, getDBRuns, saveLocalRun, updateLocalRun } from '../../state/ducks/runs';
+import {
+  getLocalRun, getDBRuns, saveLocalRun, updateLocalRun,
+} from '../../state/ducks/runs';
 import {
   getDockerStatus,
   pullComputations,
@@ -131,15 +133,15 @@ class Dashboard extends Component {
     const { router } = this.context;
 
     dockerInterval = setInterval(() => {
-      let status = this.props.getDockerStatus();
+      const status = this.props.getDockerStatus();
       status.then((result) => {
-        if( result == 'OK' ){
-          this.setState({dockerStatus: true});
-        }else{
-          this.setState({dockerStatus: false});
+        if (result == 'OK') {
+          this.setState({ dockerStatus: true });
+        } else {
+          this.setState({ dockerStatus: false });
         }
       }, (err) => {
-        this.setState({dockerStatus: false});
+        this.setState({ dockerStatus: false });
       });
     }, 5000);
 
@@ -213,7 +215,7 @@ class Dashboard extends Component {
     ipcRenderer.on('docker-error', (event, arg) => {
       this.props.notifyError({
         message: `Docker Error: ${arg.err.message}`,
-        autoDismiss: 5
+        autoDismiss: 5,
       });
     });
   }
@@ -268,8 +270,8 @@ class Dashboard extends Component {
           // Run already in props but error is incoming
         } else if (runIndexInLocalRuns > -1 && nextProps.remoteRuns[i].error
           && !this.props.runs[runIndexInLocalRuns].error && this.props.consortia.length
-          && (!this.props.remoteRuns.length ||
-            (runIndexInPropsRemote > -1 && !this.props.remoteRuns[runIndexInPropsRemote].error)
+          && (!this.props.remoteRuns.length
+            || (runIndexInPropsRemote > -1 && !this.props.remoteRuns[runIndexInPropsRemote].error)
           )
         ) {
           const run = nextProps.remoteRuns[i];
@@ -293,8 +295,8 @@ class Dashboard extends Component {
         } else if (runIndexInLocalRuns > -1 && nextProps.remoteRuns[i].results
           && runIndexInPropsRemote > -1
           && !this.props.runs[runIndexInLocalRuns].results && this.props.consortia.length
-          && (!this.props.remoteRuns.length ||
-            (runIndexInPropsRemote > -1 && !this.props.remoteRuns[runIndexInPropsRemote].results)
+          && (!this.props.remoteRuns.length
+            || (runIndexInPropsRemote > -1 && !this.props.remoteRuns[runIndexInPropsRemote].results)
           )
         ) {
           const run = nextProps.remoteRuns[i];
@@ -315,22 +317,19 @@ class Dashboard extends Component {
           });
           // Looking for remote run state changes
         } else if (runIndexInPropsRemote > -1 && nextProps.remoteRuns[i].remotePipelineState
-          && (!this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState ||
-            (
+          && (!this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState
+            || (
               nextProps.remoteRuns[i].remotePipelineState.currentIteration
               !== this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.currentIteration
               || nextProps.remoteRuns[i].remotePipelineState.controllerState
               !== this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.controllerState
               || nextProps.remoteRuns[i].remotePipelineState.pipelineStep
               !== this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.pipelineStep
-              ||
-              (!nextProps.remoteRuns[i].remotePipelineState.waitingOn
+              || (!nextProps.remoteRuns[i].remotePipelineState.waitingOn
                && this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.waitingOn)
-              ||
-              (nextProps.remoteRuns[i].remotePipelineState.waitingOn
+              || (nextProps.remoteRuns[i].remotePipelineState.waitingOn
                && !this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.waitingOn)
-              ||
-              (nextProps.remoteRuns[i].remotePipelineState.waitingOn
+              || (nextProps.remoteRuns[i].remotePipelineState.waitingOn
                && this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.waitingOn
                && nextProps.remoteRuns[i].remotePipelineState.waitingOn.length
                !== this.props.remoteRuns[runIndexInPropsRemote].remotePipelineState.waitingOn.length)
@@ -528,7 +527,9 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { auth, children, computations, consortia, pipelines, runs, classes } = this.props;
+    const {
+      auth, children, computations, consortia, pipelines, runs, classes,
+    } = this.props;
     const { dockerStatus } = this.state;
     const { router } = this.context;
 
@@ -596,7 +597,7 @@ class Dashboard extends Component {
                   className="back-button"
                   onClick={this.goBack}
                 >
-                  <Icon className="fa fa-arrow-up arrow-icon"/>
+                  <Icon className="fa fa-arrow-up arrow-icon" />
                 </button>
               )}
               {childrenWithProps}
@@ -722,9 +723,9 @@ const DashboardWithData = compose(
       updateUserConsortiumStatus: (consortiumId, status) => mutate({
         variables: { consortiumId, status },
       })
-      .then(({ data: { updateUserConsortiumStatus: { consortiaStatuses } } }) => {
-        return ownProps.updateUserConsortiaStatuses(consortiaStatuses);
-      }),
+        .then(({ data: { updateUserConsortiumStatus: { consortiaStatuses } } }) => {
+          return ownProps.updateUserConsortiaStatuses(consortiaStatuses);
+        }),
     }),
   }),
   withApollo

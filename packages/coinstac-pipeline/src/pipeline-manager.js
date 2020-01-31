@@ -49,6 +49,58 @@ const getFilesAndDirs = async (dir) => {
   }, { files: [], directories: [] });
 };
 
+/**
+ * Creates a task handler that sets a task to  be executed on a timeout specified
+ * @param  {Object} logger logging instace to use
+ * @return {Object} an interface to the created taskHandler instance
+ */
+const taskHandler = (logger) => {
+  const currentTasks = {};
+  return {
+    /**
+     * Add a task to be run
+     * @param {Function} task     task given to the timeout cb
+     * @param {string} taskName   a unique task name, referenced when removing
+     * @param {int} interval      the time to wait to execution
+     * @param {string} pipelineId pipeline associated with the task
+     */
+    add: ({
+      task, taskName, timeout, pipelineId,
+    }) => {
+      const taskRunner = setTimeout(() => {
+        try {
+          Promise.resolve(task()).catch((e) => {
+            logger.error(`Task failed pipeline ${pipelineId}: ${e}`);
+          });
+        } catch (e) {
+          logger.error(`Task failed pipeline ${pipelineId}: ${e}`);
+        }
+      }, timeout);
+      currentTasks[pipelineId] = Object.assign(
+        {}, currentTasks[pipelineId], { [taskName]: taskRunner }
+      );
+    },
+    /**
+     * Clear all or a specfic task for a pipeline
+     * @param  {string} pipelineId  pipline to operate on
+     * @param  {string} taskName    optional task name to clear
+     */
+    clear: (pipelineId, taskName) => {
+      if (currentTasks[pipelineId]) {
+        if (currentTasks[pipelineId][taskName]) {
+          clearTimeout(currentTasks[pipelineId][taskName]);
+          currentTasks[pipelineId][taskName] = undefined;
+          return;
+        }
+        Object.keys(currentTasks[pipelineId]).forEach((task) => {
+          clearTimeout(currentTasks[pipelineId][task]);
+          currentTasks[pipelineId][task] = undefined;
+        });
+      }
+    },
+  };
+};
+
 module.exports = {
 
   /**
@@ -82,6 +134,8 @@ module.exports = {
     const remoteClients = {};
     const request = remoteProtocol.trim() === 'https:' ? https : http;
     logger = logger || defaultLogger;
+    const managerTaskHandler = taskHandler(logger);
+
 
     /**
      * exponential backout for GET
@@ -249,7 +303,7 @@ module.exports = {
 
     const aggregateRun = (runId) => {
       return _.reduce(remoteClients, (memo, client, id) => {
-        if (client[runId]) {
+        if (client[runId] && activePipelines[runId].clients.includes(client.id)) {
           memo[id] = client[runId].currentOutput;
           client[runId].currentOutput = undefined;
           client[runId].files = { received: [], expected: [] };
@@ -321,6 +375,10 @@ module.exports = {
             activePipelines[req.body.runId].state = 'received all clients data';
             logger.silly('Received all client data');
             // clear transfer and start run
+            managerTaskHandler.clear(
+              req.body.runId,
+              activePipelines[req.body.runId].clientTimeoutTask
+            );
             activePipelines[req.body.runId].remote.resolve(
               rimraf(path.join(activePipelines[req.body.runId].transferDirectory, '*'))
                 .then(() => ({ output: aggregateRun(req.body.runId) }))
@@ -380,11 +438,19 @@ module.exports = {
           case 'run':
             logger.silly(`############ Received client data: ${data.id}`);
             if (!activePipelines[data.runId] || !remoteClients[data.id]) {
-              return serverMqt.publish(`${data.id}-run`, JSON.stringify({ runId: data.runId, error: new Error('Remote has no such pipeline run') }));
+              if (activePipelines[data.runId]
+                && activePipelines[data.runId].deadClients.includes(data.id)
+              ) {
+                return serverMqt.publish(`${data.id}-run`, JSON.stringify({ runId: data.runId, error: { message: 'You have been dropped from the computation because your iteration took too long' } }));
+              }
+              return serverMqt.publish(`${data.id}-run`, JSON.stringify({ runId: data.runId, error: { message: 'Remote has no such pipeline run' } }));
             }
 
             // normal pipeline operation
-            if (remoteClients[data.id] && remoteClients[data.id][data.runId]) {
+            if (remoteClients[data.id]
+              && remoteClients[data.id][data.runId]
+              && activePipelines[data.runId].clients.includes(data.id)
+            ) {
               remoteClients[data.id].lastSeen = Math.floor(Date.now() / 1000);
 
               // is the client giving us an error?
@@ -418,6 +484,10 @@ module.exports = {
                       activePipelines[data.runId].state = 'received all clients data';
                       logger.silly('Received all client data');
                       // clear transfer and start run
+                      managerTaskHandler.clear(
+                        data.runId,
+                        activePipelines[data.runId].clientTimeoutTask
+                      );
                       activePipelines[data.runId].remote.resolve(
                         rimraf(path.join(activePipelines[data.runId].transferDirectory, '*')).then(() => ({ output: aggregateRun(data.runId) }))
                       );
@@ -429,7 +499,7 @@ module.exports = {
                     { runId: data.runId, error: activePipelines[data.runId].error }
                   );
                 }
-              } else {
+              } else if (activePipelines[data.runId]) {
                 const runError = Object.assign(
                   new Error(),
                   data.error,
@@ -614,7 +684,9 @@ module.exports = {
        * @return {Object}              an object containing the active pipeline and
        *                               Promise for its result
        */
-      startPipeline({ spec, clients = [], runId }) {
+      startPipeline({
+        spec, clients = [], runId, clientTimeout,
+      }) {
         if (activePipelines[runId] && activePipelines[runId].state !== 'pre-pipeline') {
           throw new Error('Duplicate pipeline started');
         }
@@ -645,10 +717,11 @@ module.exports = {
             communicate: undefined,
             clients,
             remote: { reject: () => {} }, // noop for pre pipe errors
+            clientTimeout,
+            deadClients: [],
           },
           activePipelines[runId]
         );
-
         // remote client object creation
         clients.forEach((client) => {
           remoteClients[client] = Object.assign(
@@ -816,7 +889,7 @@ module.exports = {
                       });
                       archive.finalize();
                       return archProm.then(() => {
-                        logger.debug('############# Local client sending out data with files');
+                        logger.debug(`############# Local client ${clientId} sending out data with files`);
                         mqtCon.publish(
                           'run',
                           JSON.stringify({
@@ -859,7 +932,7 @@ module.exports = {
                     if (!activePipelines[pipeline.id].registered) { // eslint-disable-line no-lonely-if, max-len
                       activePipelines[pipeline.id].stashedOutput = message;
                     } else {
-                      logger.debug('############# Local client sending out data');
+                      logger.debug(`############# Local client ${clientId} sending out data`);
                       mqtCon.publish(
                         'run',
                         JSON.stringify({
@@ -913,7 +986,42 @@ module.exports = {
               proxRes();
             }
 
-            if (mode === 'remote') activePipelines[runId].state = 'running';
+            if (mode === 'remote') {
+              if (activePipelines[runId].clientTimeout !== undefined && input.success !== true) {
+                activePipelines[runId].clientTimeoutTask = 'clientTimeoutTask';
+                managerTaskHandler.add({
+                  task: () => {
+                    const deadClients = waitingOnForRun(runId);
+                    activePipelines[runId].clients = activePipelines[runId]
+                      .clients.filter((client) => {
+                        if (!deadClients.includes(client)) {
+                          return true;
+                        }
+                        clientPublish(
+                          [client],
+                          { runId, error: { message: 'You have been dropped from the computation because your iteration took too long' } }
+                        );
+                        return false;
+                      });
+                    // yuck, find better way to mutate controller state
+                    activePipelines[runId].deadClients = _.union(
+                      activePipelines[runId].deadClients, deadClients
+                    );
+                    activePipelines[runId].remote.resolve(
+                      rimraf(path.join(activePipelines[runId].transferDirectory, '*'))
+                        .then(() => ({
+                          output: aggregateRun(runId),
+                          state: { deadClients: activePipelines[runId].deadClients },
+                        }))
+                    );
+                  },
+                  taskName: 'clientTimeoutTask',
+                  timeout: clientTimeout,
+                  pipelineId: runId,
+                });
+              }
+              activePipelines[runId].state = 'running';
+            }
           } else if (activePipelines[runId].state === 'created') {
             activePipelines[runId].state = 'running';
             activePipelines[runId].clients.forEach((client) => {
@@ -937,7 +1045,6 @@ module.exports = {
             this.activePipelines[runId].pipeline.stateEmitter.on('update',
               data => this.activePipelines[runId].stateEmitter
                 .emit('update', Object.assign({}, data, activePipelines[runId].currentState)));
-
             return activePipelines[runId].pipeline.run(remoteHandler)
               .then((res) => {
                 activePipelines[runId].state = 'finished';

@@ -80,6 +80,19 @@ const decentralizedPipelineSpec = {
   ],
 };
 
+const decentralizedTimeoutPipelineSpec = {
+  steps: [
+    {
+      controller: { type: 'decentralized' },
+      computations: [decentralizedCompSpec],
+      inputMap: {
+        start: { value: 1 },
+        timeoutUser: { value: 'one' },
+      },
+    },
+  ],
+};
+
 // errors on the remote
 const decentralizedErrorPipelineSpec = {
   steps: [
@@ -197,10 +210,10 @@ test('test mixed decent/local pipeline', (t) => {
 
   return Promise.all([
     localPipeline.result.then((result) => {
-      t.is(result.sum, 5);
+      t.is(result.sums.one.sum, 6);
     }),
     remotePipeline.result.then((result) => {
-      t.is(result.sum, 5);
+      t.is(result.sums.one.sum, 6);
     }),
   ]);
 });
@@ -316,7 +329,7 @@ test('test pre remote start data preservation', (t) => {
         });
         remotePipeline.result
           .then((result) => {
-            t.is(result.sum, 5);
+            t.is(result.sums.one.sum, 6);
             proxRes(result);
           }).catch(err => proxRej(err));
       }, 5000);
@@ -338,7 +351,8 @@ test('test pre remote start data preservation', (t) => {
         });
         remotePipeline.result
           .then((result) => {
-            t.is(result.sum, 5);
+            t.is(result.sums.one.sum, 6);
+            t.is(result.sums.two.sum, 6);
             proxRes2(result);
           }).catch(err => proxRej2(err));
       }, 5000);
@@ -368,6 +382,37 @@ test('file transfer and output test', (t) => {
       result.files.forEach((file) => {
         t.is(existsSync(path.join('test', 'tempCompDir', 'input', 'one', 'fileTest', file)), true);
       });
+    }),
+  ]);
+});
+
+test('client timeout', (t) => {
+  const remotePipeline = remote.startPipeline({
+    clients: ['one', 'two'],
+    spec: decentralizedTimeoutPipelineSpec,
+    runId: 'timeout',
+    clientTimeout: 5000,
+  });
+  const localPipeline = local.startPipeline({
+    spec: decentralizedTimeoutPipelineSpec,
+    runId: 'timeout',
+  });
+  const localPipeline2 = local2.startPipeline({
+    spec: decentralizedTimeoutPipelineSpec,
+    runId: 'timeout',
+  });
+
+  return Promise.all([
+    localPipeline.result.then(() => {
+      t.fail('Node one did not timeout in timeout test');
+    }).catch((e) => {
+      t.is(e.message.includes('no such pipeline') || e.message.includes('dropped'), true);
+    }),
+    localPipeline2.result.then((result) => {
+      t.deepEqual(result, { sums: { two: { sum: 6 } }, deadClients: ['one'] });
+    }),
+    remotePipeline.result.then((result) => {
+      t.deepEqual(result, { sums: { two: { sum: 6 } }, deadClients: ['one'] });
     }),
   ]);
 });

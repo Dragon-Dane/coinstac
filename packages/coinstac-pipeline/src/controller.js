@@ -115,6 +115,7 @@ module.exports = {
                       clientId,
                       iteration,
                       owner,
+                      deadClients = [],
                     }) => ({
                       baseDirectory,
                       outputDirectory,
@@ -123,6 +124,7 @@ module.exports = {
                       clientId,
                       iteration,
                       owner,
+                      deadClients,
                     }))(controllerState),
                   },
                   { baseDirectory: operatingDirectory }
@@ -179,6 +181,10 @@ module.exports = {
                     output: output.output,
                     success: output.success,
                   };
+                  // update any state from caller
+                  Object.keys(output.state || {}).forEach((key) => {
+                    controllerState[key] = output.state[key];
+                  });
                   output = undefined;
                   cb(controllerState.currentOutput.output);
                 }).catch(error => err(error));
@@ -193,6 +199,10 @@ module.exports = {
                     output: output.output,
                     success: output.success,
                   };
+                  // update any state from caller
+                  Object.keys(output.state || {}).forEach((key) => {
+                    controllerState[key] = output.state[key];
+                  });
                   output = undefined;
                   cb(controllerState.currentOutput.output);
                 }).catch(error => err(error));
@@ -205,7 +215,13 @@ module.exports = {
                 transmitOnly: true,
                 iteration: controllerState.iteration,
               })
-                .then(() => {
+                .then((output) => {
+                  // update any state from caller
+                  if (output) {
+                    Object.keys(output.state || {}).forEach((key) => {
+                      controllerState[key] = output.state[key];
+                    });
+                  }
                   setStateProp('state', 'finished final remote iteration');
                   cb(input);
                 }).catch(error => err(error));

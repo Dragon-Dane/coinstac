@@ -3,15 +3,13 @@
 import sys
 import json
 
+success = False
 doc = json.loads(sys.stdin.read())
-sums = 0
 for site, output in doc['input'].items():
-    sums = sums + output['sum'];
-sums = sums / len(doc['input'])
-if sums > 4:
-    success = True
-else:
-    success = False
+    doc['input'][site]['sum'] = doc['input'][site]['sum'] + 1;
+    if doc['input'][site]['sum'] > 4:
+        success = True
 
-output = { "output": { "sum": sums }, "success": success }
+
+output = { "output": { "sums": doc['input'], "deadClients": doc['state']['deadClients'] }, "success": success }
 sys.stdout.write(json.dumps(output))
